@@ -12,6 +12,7 @@
 	convertWarningsToExceptions="true">
 	<coverage processUncoveredFiles="true">
 		<include>
+			<directory suffix=".php">app/</directory>
 			<directory suffix=".php">inc/</directory>
 		</include>
 		<report>
