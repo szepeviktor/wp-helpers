@@ -135,7 +135,7 @@ jobs:
           WP_DB_TEST_HOST: 127.0.0.1:${{ job.services.database.ports['3306'] }}
           WP_ENVIRONMENT_TYPE: development
 
-      # - name: Upload coverage to Codecov
-      #   uses: codecov/codecov-action@v4
-      #   env:
-      #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
