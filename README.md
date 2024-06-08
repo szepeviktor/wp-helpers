@@ -1,8 +1,8 @@
 <div align="center">
   <strong>📦 wp-helpers</strong>
   <p>Handy functions for WordPress</p>
-  
-  ![Packagist Dependency Version](https://img.shields.io/packagist/dependency-v/syntatis/wp-helpers/php) [![wp](https://github.com/syntatis/wp-helpers/actions/workflows/wp.yml/badge.svg)](https://github.com/syntatis/wp-helpers/actions/workflows/wp.yml)
+
+  ![Packagist Dependency Version](https://img.shields.io/packagist/dependency-v/syntatis/wp-helpers/php) [![wp](https://github.com/syntatis/wp-helpers/actions/workflows/wp.yml/badge.svg)](https://github.com/syntatis/wp-helpers/actions/workflows/wp.yml) [![codecov](https://codecov.io/gh/syntatis/wp-helpers/graph/badge.svg?token=Z4ACIPWD8T)](https://codecov.io/gh/syntatis/wp-helpers)
 </div>
 
 ---
