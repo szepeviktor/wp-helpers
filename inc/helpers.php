@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Syntatis\WPHelpers;
 
 use function defined;
+use function in_array;
 
 /**
  * Check whether the plugin is updated.
@@ -24,14 +25,7 @@ use function defined;
 function is_plugin_updated(string $pluginBasename, array $hookExtra): bool
 {
 	if ($hookExtra['action'] === 'update' && $hookExtra['type'] === 'plugin' && isset($hookExtra['plugins'])) {
-		foreach ($hookExtra['plugins'] as $plugin) {
-			// Check if the plugin is the current plugin.
-			if ($plugin !== $pluginBasename) {
-				continue;
-			}
-
-			return true;
-		}
+		return in_array($pluginBasename, $hookExtra['plugins'], true);
 	}
 
 	return false;
