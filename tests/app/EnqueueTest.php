@@ -100,7 +100,7 @@ class EnqueueTest extends WPTestCase
 		$this->assertSame(['jquery'], $wpScripts->registered['prefix-foo']->deps);
 	}
 
-	public function testAddScriptWithManifest(): void
+	public function testAddScriptWithArgs(): void
 	{
 		$enqueue = new Enqueue($this->fixturePath . '/assets', 'https://example.com/assets/');
 		$enqueue->setPrefix('prefix');
@@ -127,7 +127,7 @@ class EnqueueTest extends WPTestCase
 		);
 	}
 
-	public function testAddScriptWithManifestAndOptions(): void
+	public function testAddScriptWithArgsAndOptions(): void
 	{
 		$enqueue = new Enqueue($this->fixturePath . '/assets', 'https://example.com/assets/');
 		$enqueue->setPrefix('prefix');
@@ -196,7 +196,7 @@ class EnqueueTest extends WPTestCase
 
 		$enqueue = new Enqueue($this->fixturePath . '/assets', 'https://example.com/assets/');
 		$enqueue->setTranslations('text-domain', $this->fixturePath . '/languages');
-		$enqueue->addScript('admin', ['localized' => true]);
+		$enqueue->addScript('admin')->hasTranslation();
 		$enqueue->scripts();
 
 		/** @var WP_Scripts $wpScripts */

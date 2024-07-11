@@ -13,18 +13,37 @@ class Script
 	/** @var array<InlineScript> */
 	private array $inlineScripts = [];
 
-	/** @var array{handle:string,url:string,localized:bool,dependencies:array<string>,version:string|null} */
-	private array $manifest;
+	private bool $localized = false;
 
-	/** @param array{handle:string,url:string,localized:bool,dependencies:array<string>,version:string|null} $manifest */
-	public function __construct(array $manifest)
+	/** @var array{handle:string,url:string,dependencies:array<string>,version:string|null} */
+	private array $args;
+
+	/** @param array{handle:string,url:string,dependencies:array<string>,version:string|null} $args */
+	public function __construct(array $args)
 	{
-		$this->manifest = $manifest;
+		$this->args = $args;
 	}
 
-	public function withInlineScripts(InlineScript ...$inlineScripts): void
+	/**
+	 * If set to `true` it will load with the translation data related to the script,
+	 * through Wordress native function `wp_set_script_translations`.
+	 *
+	 * @see https://make.wordpress.org/core/2018/11/09/new-javascript-i18n-support-in-wordpress/
+	 */
+	public function hasTranslation(bool $localized = true): self
 	{
-		$this->inlineScripts = $inlineScripts;
+		$self = clone $this;
+		$self->localized = $localized;
+
+		return $self;
+	}
+
+	public function withInlineScripts(InlineScript ...$inlineScripts): self
+	{
+		$self = clone $this;
+		$self->inlineScripts = $inlineScripts;
+
+		return $self;
 	}
 
 	/** @return array{handle:string,url:string,localized:bool,dependencies:array<string>,version:string|null,inline:array<array{data:string,position:string}>} */
@@ -39,6 +58,12 @@ class Script
 			];
 		}
 
-		return array_merge($this->manifest, ['inline' => $inline]);
+		return array_merge(
+			$this->args,
+			[
+				'inline' => $inline,
+				'localized' => $this->localized,
+			],
+		);
 	}
 }

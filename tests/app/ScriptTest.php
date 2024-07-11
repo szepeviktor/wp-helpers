@@ -16,7 +16,6 @@ class ScriptTest extends WPTestCase
 			'handle' => 'script',
 			'dependencies' => ['jquery'],
 			'version' => '1.0.0',
-			'localized' => true,
 		]);
 
 		$this->assertSame([
@@ -24,12 +23,12 @@ class ScriptTest extends WPTestCase
 			'handle' => 'script',
 			'dependencies' => ['jquery'],
 			'version' => '1.0.0',
-			'localized' => true,
 			'inline' => [],
+			'localized' => false,
 		], $script->get());
 	}
 
-	public function testGetWithInlineScripts(): void
+	public function testWithInlineScripts(): void
 	{
 		$inlineScript = new class implements InlineScript {
 			public function getInlineScriptPosition(): string
@@ -43,27 +42,45 @@ class ScriptTest extends WPTestCase
 			}
 		};
 
-		$script = new Script([
+		$script = (new Script([
 			'url' => 'https://example.com/assets/script.js',
 			'handle' => 'script',
 			'dependencies' => ['jquery'],
 			'version' => '1.0.0',
-			'localized' => true,
-		]);
-		$script->withInlineScripts($inlineScript);
+		]))->withInlineScripts($inlineScript);
 
 		$this->assertSame([
 			'url' => 'https://example.com/assets/script.js',
 			'handle' => 'script',
 			'dependencies' => ['jquery'],
 			'version' => '1.0.0',
-			'localized' => true,
 			'inline' => [
 				[
 					'position' => 'before',
 					'data' => 'console.log("Hello, World!");',
 				],
 			],
+			'localized' => false,
+		], $script->get());
+	}
+
+	public function testWithTranslation(): void
+	{
+		$script = (new Script([
+			'url' => 'https://example.com/assets/script.js',
+			'handle' => 'script',
+			'dependencies' => ['jquery'],
+			'version' => '1.0.0',
+		]))
+		->hasTranslation();
+
+		$this->assertSame([
+			'url' => 'https://example.com/assets/script.js',
+			'handle' => 'script',
+			'dependencies' => ['jquery'],
+			'version' => '1.0.0',
+			'inline' => [],
+			'localized' => true,
 		], $script->get());
 	}
 }
