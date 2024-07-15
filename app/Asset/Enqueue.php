@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WPHelpers\Enqueue;
+namespace Syntatis\WPHelpers\Asset;
 
 use InvalidArgumentException;
 

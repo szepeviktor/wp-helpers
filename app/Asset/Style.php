@@ -2,25 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WPHelpers\Enqueue;
+namespace Syntatis\WPHelpers\Asset;
 
-use Syntatis\WPHelpers\Contracts\Enqueueable;
-use Syntatis\WPHelpers\Contracts\InlineScript;
-use Syntatis\WPHelpers\Enqueue\Traits\FilePathDefiner;
+use Syntatis\WPHelpers\Asset\Contracts\Enqueueable;
+use Syntatis\WPHelpers\Asset\Traits\FilePathDefiner;
 
 use function pathinfo;
 use function str_starts_with;
 use function Syntatis\Utils\is_blank;
 
 /**
- * Defines the JavaScript file to enqueue.
+ * Defines the stylesheet to enqueue.
  */
-class Script implements Enqueueable
+class Style implements Enqueueable
 {
 	use FilePathDefiner;
-
-	protected bool $isTranslated = false;
-	protected bool $footer = false;
 
 	/**
 	 * The version of the script.
@@ -30,9 +26,6 @@ class Script implements Enqueueable
 	 * generated from `@wordpress/scripts`.
 	 */
 	protected ?string $version = null;
-
-	/** @var array<InlineScript> */
-	protected array $inlineScripts = [];
 
 	/** @var array<string> */
 	protected array $dependencies = [];
@@ -46,18 +39,20 @@ class Script implements Enqueueable
 	/** @phpstan-var non-empty-string */
 	protected string $handle;
 
+	/** @phpstan-var non-empty-string */
+	protected string $media = 'all';
+
 	/** @var array{dirname:string,filename:string,basename:string,extension:string} */
 	protected array $fileInfo;
 
 	/**
 	 * @param string $filePath The path to the script file, relative to the directory path set in the
 	 *                         `Enqueue` class.
-	 * @param string $handle   Optional. Name of the script. Should be unique. By default, when it is
-	 *                         not set, it will try to determine the handle from the file name. If
-	 *                         the file name is `script.ts`, the handle will be `script`. Keep
-	 *                         in mind that handles generated from file names may not be
-	 *                         unique. In such cases, it's better to pass the the
-	 *                         argument in this parameter to set the handle.
+	 * @param string $handle   Optional. Name of the script. Should be unique. By default, when it's not set,
+	 *                         it will be derived from the file name. If the file name is `style.scss`,
+	 *                         the handle will be `style`. Keep in mind that handles generated from
+	 *                         file names may not be unique. In such cases, it's better to set
+	 *                         the handle manually.
 	 *
 	 * @phpstan-param non-empty-string $filePath
 	 * @phpstan-param non-empty-string|null $handle
@@ -65,29 +60,15 @@ class Script implements Enqueueable
 	public function __construct(string $filePath, ?string $handle = null)
 	{
 		$this->fileInfo = pathinfo(str_starts_with($filePath, '/') ? $filePath : '/' . $filePath);
-		$this->filePath = $this->definePath($filePath, '.js');
+		$this->filePath = $this->definePath($filePath, '.css');
 		$this->manifestPath = $this->definePath($filePath, '.asset.php');
 		$this->handle = is_blank($handle) ? $this->defineHandle($filePath) : $handle;
 	}
 
-	/**
-	 * If set to `true` it will load with the translation data related to the
-	 * script, through Wordress native function `wp_set_script_translations`.
-	 *
-	 * @see https://make.wordpress.org/core/2018/11/09/new-javascript-i18n-support-in-wordpress/
-	 */
-	public function withTranslation(bool $translated = true): self
+	public function onMedia(string $media = 'all'): self
 	{
 		$self = clone $this;
-		$self->isTranslated = $translated;
-
-		return $self;
-	}
-
-	public function atFooter(bool $footer = true): self
-	{
-		$self = clone $this;
-		$self->footer = $footer;
+		$self->media = $media;
 
 		return $self;
 	}
@@ -97,14 +78,6 @@ class Script implements Enqueueable
 	{
 		$self = clone $this;
 		$self->version = $version;
-
-		return $self;
-	}
-
-	public function withInlineScripts(InlineScript ...$inlineScripts): self
-	{
-		$self = clone $this;
-		$self->inlineScripts = $inlineScripts;
 
 		return $self;
 	}
@@ -134,16 +107,9 @@ class Script implements Enqueueable
 		return $this->filePath;
 	}
 
-	/** @phpstan-return non-empty-string */
-	public function getManifestPath(): string
+	public function getVersion(): ?string
 	{
-		return $this->manifestPath;
-	}
-
-	/** @return array<InlineScript> */
-	public function getInlineScripts(): array
-	{
-		return $this->inlineScripts;
+		return $this->version;
 	}
 
 	/** @inheritDoc */
@@ -152,18 +118,15 @@ class Script implements Enqueueable
 		return $this->dependencies;
 	}
 
-	public function isTranslated(): bool
+	/** @phpstan-return non-empty-string */
+	public function getMedia(): string
 	{
-		return $this->isTranslated;
+		return $this->media;
 	}
 
-	public function isAtFooter(): bool
+	/** @phpstan-return non-empty-string */
+	public function getManifestPath(): string
 	{
-		return $this->footer;
-	}
-
-	public function getVersion(): ?string
-	{
-		return $this->version;
+		return $this->manifestPath;
 	}
 }

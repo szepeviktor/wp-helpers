@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WPHelpers\Tests;
+namespace Syntatis\WPHelpers\Tests\Asset;
 
-use Syntatis\WPHelpers\Enqueue\Style;
+use Syntatis\WPHelpers\Asset\Style;
+use Syntatis\WPHelpers\Tests\WPTestCase;
 
 class StyleTest extends WPTestCase
 {

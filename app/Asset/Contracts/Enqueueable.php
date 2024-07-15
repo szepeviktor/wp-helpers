@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WPHelpers\Contracts;
+namespace Syntatis\WPHelpers\Asset\Contracts;
 
 interface Enqueueable
 {

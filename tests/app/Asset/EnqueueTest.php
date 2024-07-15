@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WPHelpers\Tests;
+namespace Syntatis\WPHelpers\Tests\Asset;
 
 use _WP_Dependency;
-use Syntatis\WPHelpers\Contracts\InlineScript;
-use Syntatis\WPHelpers\Enqueue\Enqueue;
-use Syntatis\WPHelpers\Enqueue\Script;
-use Syntatis\WPHelpers\Enqueue\Style;
+use Syntatis\WPHelpers\Asset\Contracts\InlineScript;
+use Syntatis\WPHelpers\Asset\Enqueue;
+use Syntatis\WPHelpers\Asset\Script;
+use Syntatis\WPHelpers\Asset\Style;
+use Syntatis\WPHelpers\Tests\WPTestCase;
 
 use function dirname;
 
@@ -21,7 +22,7 @@ class EnqueueTest extends WPTestCase
 	{
 		parent::set_up();
 
-		$this->fixturePath = dirname(__DIR__) . '/phpunit/fixtures';
+		$this->fixturePath = dirname(__DIR__, 2) . '/phpunit/fixtures';
 	}
 
 	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps

@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WPHelpers\Tests;
+namespace Syntatis\WPHelpers\Tests\Asset;
 
-use Syntatis\WPHelpers\Contracts\InlineScript;
-use Syntatis\WPHelpers\Enqueue\Script;
+use Syntatis\WPHelpers\Asset\Contracts\InlineScript;
+use Syntatis\WPHelpers\Asset\Script;
+use Syntatis\WPHelpers\Tests\WPTestCase;
 
 class ScriptTest extends WPTestCase
 {

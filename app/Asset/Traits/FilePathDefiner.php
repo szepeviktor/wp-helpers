@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WPHelpers\Enqueue\Traits;
+namespace Syntatis\WPHelpers\Asset\Traits;
 
 use function sprintf;
 use function str_replace;
