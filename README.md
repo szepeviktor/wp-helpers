@@ -8,9 +8,9 @@
 ---
 
 > [!CAUTION]
-> This package is currently in active development. Please be aware that there may be some changes as the package continue to evolve.
+> This package is currently under active development. Please be aware that there may be some changes as the package evolves.
 
-The `syntatis/wp-helpers` package provides a set of reusable functions and classes designed to simplify and get common tasks in WordPress plugins and themes more organized.
+The `syntatis/wp-helpers` package provides a set of reusable functions and classes designed to simplify and organize common tasks in WordPress plugins and themes.
 
 ## Installation
 
