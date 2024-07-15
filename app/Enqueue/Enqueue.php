@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Syntatis\WPHelpers\Enqueue;
 
+use InvalidArgumentException;
+
 use function array_merge;
-use function basename;
 use function is_file;
 use function Syntatis\Utils\is_blank;
+
+use const DIRECTORY_SEPARATOR;
 
 /**
  * A helper class providing an OOP interface to enqueue scripts and styles in WordPress.
@@ -17,16 +20,19 @@ class Enqueue
 	/** @var array<Script> */
 	private array $scripts = [];
 
-	/** @var array<string,array{url:string,handle:string,dependencies:string[],version:string|null,media:string}> */
+	/** @var array<Style> */
 	private array $styles = [];
 
+	/** @phpstan-var non-empty-string */
 	private string $dirPath;
 
+	/** @phpstan-var non-empty-string */
 	private string $dirUrl;
 
+	/** @phpstan-var non-empty-string */
 	private string $domainName;
 
-	private string $languagePath;
+	private string $languagePath = '';
 
 	private ?string $prefix = null;
 
@@ -36,11 +42,14 @@ class Enqueue
 	 *                        This URL will be used to enqueue the scripts and styles. Typically, it
 	 *                        may be retrieved with the `plugin_dir_url` function or the
 	 *                        `get_template_directory_uri` function.
+	 *
+	 * @phpstan-param non-empty-string $dirPath
+	 * @phpstan-param non-empty-string|null $dirUrl
 	 */
 	public function __construct(string $dirPath, string $dirUrl)
 	{
-		$this->dirPath = trailingslashit($dirPath);
-		$this->dirUrl = trailingslashit($dirUrl);
+		$this->dirPath = untrailingslashit($dirPath);
+		$this->dirUrl = untrailingslashit($dirUrl);
 	}
 
 	/**
@@ -72,65 +81,42 @@ class Enqueue
 	 *
 	 * @phpstan-param non-empty-string $domainName
 	 */
-	public function setTranslations(string $domainName, string $languagePath): void
+	public function setTranslations(string $domainName, string $languagePath = ''): void
 	{
 		$this->domainName = $domainName;
 		$this->languagePath = trailingslashit($languagePath);
 	}
 
 	/**
-	 * Add a script file to enqueue.
-	 *
-	 * @param string                                                               $fileName The name of the script file, without the .js extension.
-	 * @param array{localized:bool,dependencies:array<string>,version:string|null} $options
-	 *
-	 * @phpstan-param non-empty-string $fileName
-	 * @phpstan-param array{localized:bool,dependencies:list<non-empty-string>,version:non-empty-string|null} $options
+	 * Add list of scripts to enqueue.
 	 */
-	public function addScript(string $fileName, array $options = []): Script
+	public function addScripts(Script ...$scripts): void
 	{
-		$basename = basename($fileName, '.js');
-		$manifest = $this->getManifest($basename);
+		foreach ($scripts as $script) {
+			$handle = $script->getHandle();
 
-		$script = new Script(array_merge(
-			$manifest,
-			[
-				'dependencies' => array_merge($manifest['dependencies'] ?? [], $options['dependencies'] ?? []),
-				'localized' => $options['localized'] ?? false,
-				'url' => $manifest['url'] . '.js',
-				'version' => $options['version'] ?? $manifest['version'] ?? null,
-			],
-		));
+			if (isset($this->scripts[$handle])) {
+				throw new InvalidArgumentException('The script handle "' . $handle . '" is already in use.');
+			}
 
-		$this->scripts[$basename] = $script;
-
-		return $script;
+			$this->scripts[$handle] = $script;
+		}
 	}
 
 	/**
-	 * Add a stylesheet to enqueue.
-	 *
-	 * @param string                                                                            $fileName The name of the stylesheet file, without the .css extension.
-	 * @param array{localized:bool,dependencies:array<string>,version:string|null,media:string} $options
-	 *
-	 * @phpstan-param non-empty-string $fileName
-	 * @phpstan-param array{localized:bool,dependencies:list<non-empty-string>,version:non-empty-string|null,media:non-empty-string} $options
+	 * Add list of styles to enqueue.
 	 */
-	public function addStyle(string $fileName, array $options = []): void
+	public function addStyles(Style ...$styles): void
 	{
-		$basename = basename($fileName, '.css');
-		$manifest = $this->getManifest($basename);
+		foreach ($styles as $style) {
+			$handle = $style->getHandle();
 
-		$this->styles[$basename] = array_merge(
-			$manifest,
-			[
-				'handle' => $manifest['handle'],
-				'url' => $manifest['url'] . ( is_rtl() ? '-rtl' : '' ) . '.css',
-				'dependencies' => $options['dependencies'] ?? [],
-				'version' => $options['version'] ?? $manifest['version'] ?? null,
-				'media' => $options['media'] ?? 'all',
-			],
-		);
+			if (isset($this->styles[$handle])) {
+				throw new InvalidArgumentException('The style handle "' . $handle . '" is already in use.');
+			}
+
+			$this->styles[$handle] = $style;
+		}
 	}
 
 	/**
@@ -139,30 +125,33 @@ class Enqueue
 	public function scripts(): void
 	{
 		foreach ($this->scripts as $script) {
-			$script = $script->get();
+			$version = $script->getVersion();
+			$handle = $script->getHandle();
+			$handle = ! is_blank($this->prefix) ? $this->prefix . '-' . $handle : $handle;
+			$manifest = $this->getManifest($script->getManifestPath());
 
 			wp_enqueue_script(
-				$script['handle'],
-				$script['url'],
-				$script['dependencies'],
-				$script['version'],
-				true, // in footer.
+				$handle,
+				$this->dirUrl . $script->getFilePath(),
+				array_merge($manifest['dependencies'], $script->getDependencies()),
+				$version ? $version : $manifest['version'],
+				$script->isAtFooter(),
 			);
 
-			foreach ($script['inline'] as $inline) {
+			foreach ($script->getInlineScripts() as $inlineScript) {
 				wp_add_inline_script(
-					$script['handle'],
-					$inline['data'],
-					$inline['position'],
+					$handle,
+					$inlineScript->getInlineScriptContent(),
+					$inlineScript->getInlineScriptPosition(),
 				);
 			}
 
-			if (! $script['localized'] || is_blank($this->domainName) || is_blank($this->languagePath)) {
+			if (! $script->isTranslated() || is_blank($this->domainName)) {
 				continue;
 			}
 
 			wp_set_script_translations(
-				$script['handle'],
+				$handle,
 				$this->domainName,
 				$this->languagePath,
 			);
@@ -175,21 +164,26 @@ class Enqueue
 	public function styles(): void
 	{
 		foreach ($this->styles as $style) {
+			$version = $style->getVersion();
+			$handle = $style->getHandle();
+			$handle = ! is_blank($this->prefix) ? $this->prefix . '-' . $handle : $handle;
+			$manifest = $this->getManifest($style->getManifestPath());
+
 			wp_enqueue_style(
-				$style['handle'],
-				$style['url'],
-				$style['dependencies'],
-				$style['version'],
-				$style['media'],
+				$handle,
+				$this->dirUrl . $style->getFilePath(),
+				$style->getDependencies(),
+				$version ? $version : $manifest['version'],
+				$style->getMedia(),
 			);
 		}
 	}
 
-	/** @return array{dependencies:array<string>,version:string|null,handle:string,url:string} */
+	/** @return array{dependencies:array<string>,version:string|null,url:string} */
 	private function getManifest(string $fileName): array
 	{
 		$asset = [];
-		$assetFile = $this->dirPath . $fileName . '.asset.php';
+		$assetFile = wp_normalize_path($this->dirPath . DIRECTORY_SEPARATOR . $fileName);
 
 		if (is_file($assetFile)) {
 			$asset = include $assetFile;
@@ -200,8 +194,6 @@ class Enqueue
 
 		return [
 			'dependencies' => $dependencies,
-			'handle' => ! is_blank($this->prefix) ? $this->prefix . '-' . $fileName : $fileName,
-			'url' => $this->dirUrl . $fileName,
 			'version' => $version,
 		];
 	}
