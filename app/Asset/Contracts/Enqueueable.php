@@ -10,12 +10,9 @@ interface Enqueueable
 
 	public function getFilePath(): string;
 
+	/** @phpstan-return non-empty-string|null */
 	public function getVersion(): ?string;
 
-	/**
-	 * @return array<string>
-	 *
-	 * @phpstan-return array<non-empty-string>
-	 */
+	/** @return array<string> */
 	public function getDependencies(): array;
 }

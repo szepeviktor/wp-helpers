@@ -28,6 +28,8 @@ class Script implements Enqueueable
 	 * If it is set, it will be appended to the script URL as a query string,
 	 * and will override the version provided from the `*.asset.php` file
 	 * generated from `@wordpress/scripts`.
+	 *
+	 * @phpstan-var non-empty-string|null
 	 */
 	protected ?string $version = null;
 
@@ -37,17 +39,11 @@ class Script implements Enqueueable
 	/** @var array<string> */
 	protected array $dependencies = [];
 
-	/** @phpstan-var non-empty-string */
 	protected string $filePath;
 
-	/** @phpstan-var non-empty-string */
 	protected string $manifestPath;
 
-	/** @phpstan-var non-empty-string */
 	protected string $handle;
-
-	/** @var array{dirname:string,filename:string,basename:string,extension:string} */
-	protected array $fileInfo;
 
 	/**
 	 * @param string $filePath The path to the script file, relative to the directory path set in the
@@ -65,9 +61,9 @@ class Script implements Enqueueable
 	public function __construct(string $filePath, ?string $handle = null)
 	{
 		$this->fileInfo = pathinfo(str_starts_with($filePath, '/') ? $filePath : '/' . $filePath);
-		$this->filePath = $this->definePath($filePath, '.js');
-		$this->manifestPath = $this->definePath($filePath, '.asset.php');
-		$this->handle = is_blank($handle) ? $this->defineHandle($filePath) : $handle;
+		$this->filePath = $this->definePath('.js');
+		$this->manifestPath = $this->definePath('.asset.php');
+		$this->handle = is_blank($handle) ? $this->defineHandle() : $handle;
 	}
 
 	/**
@@ -109,11 +105,7 @@ class Script implements Enqueueable
 		return $self;
 	}
 
-	/**
-	 * @param array<string> $dependencies
-	 *
-	 * @phpstan-param array<non-empty-string> $dependencies
-	 */
+	/** @phpstan-param array<non-empty-string> $dependencies */
 	public function withDependencies(array $dependencies): self
 	{
 		$self = clone $this;
@@ -122,19 +114,16 @@ class Script implements Enqueueable
 		return $self;
 	}
 
-	/** @phpstan-return non-empty-string */
 	public function getHandle(): string
 	{
 		return $this->handle;
 	}
 
-	/** @phpstan-return non-empty-string */
 	public function getFilePath(): string
 	{
 		return $this->filePath;
 	}
 
-	/** @phpstan-return non-empty-string */
 	public function getManifestPath(): string
 	{
 		return $this->manifestPath;

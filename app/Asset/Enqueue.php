@@ -23,13 +23,10 @@ class Enqueue
 	/** @var array<Style> */
 	private array $styles = [];
 
-	/** @phpstan-var non-empty-string */
 	private string $dirPath;
 
-	/** @phpstan-var non-empty-string */
 	private string $dirUrl;
 
-	/** @phpstan-var non-empty-string */
 	private string $domainName;
 
 	private string $languagePath = '';
@@ -44,7 +41,7 @@ class Enqueue
 	 *                        `get_template_directory_uri` function.
 	 *
 	 * @phpstan-param non-empty-string $dirPath
-	 * @phpstan-param non-empty-string|null $dirUrl
+	 * @phpstan-param non-empty-string $dirUrl
 	 */
 	public function __construct(string $dirPath, string $dirUrl)
 	{
@@ -179,7 +176,7 @@ class Enqueue
 		}
 	}
 
-	/** @return array{dependencies:array<string>,version:string|null,url:string} */
+	/** @return array{dependencies:array<string>,version:string|null} */
 	private function getManifest(string $fileName): array
 	{
 		$asset = [];

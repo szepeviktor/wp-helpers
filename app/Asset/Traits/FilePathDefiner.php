@@ -12,7 +12,10 @@ use const DIRECTORY_SEPARATOR;
 
 trait FilePathDefiner
 {
-	private function defineHandle(string $filePath): string
+	/** @var array{dirname:string,basename:string,extension?:string,filename:string} */
+	protected array $fileInfo;
+
+	private function defineHandle(): string
 	{
 		$fileName = str_replace('.', '-', $this->fileInfo['filename']);
 		$dirName = $this->fileInfo['dirname'];
@@ -21,16 +24,20 @@ trait FilePathDefiner
 			return kebabcased($fileName);
 		}
 
-		$dirName = str_replace(['/', '.'], '-', $dirName);
-
-		return kebabcased(sprintf('%s-%s', $dirName, $fileName));
+		return kebabcased(
+			sprintf(
+				'%s-%s',
+				str_replace(['/', '.'], '-', $dirName),
+				$fileName,
+			),
+		);
 	}
 
-	/** @phpstan-return non-empty-string */
-	private function definePath(string $filePath, string $extension): string
+	/** @phpstan-param non-empty-string $extension */
+	private function definePath(string $extension): string
 	{
-		$fileName = $this->fileInfo['filename'];
 		$dirName = $this->fileInfo['dirname'];
+		$fileName = $this->fileInfo['filename'];
 		$filePath = DIRECTORY_SEPARATOR . $fileName . $extension;
 
 		if ($this->fileInfo['dirname'] === '/') {
