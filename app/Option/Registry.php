@@ -7,14 +7,14 @@ namespace Syntatis\WPHelpers\Option;
 use JsonSerializable;
 use Syntatis\WPHelpers\Option\Registries\NetworkOptionRegistry;
 use Syntatis\WPHelpers\Option\Registries\OptionRegistry;
-use Syntatis\WPHook\Contract\WithHook;
-use Syntatis\WPHook\Hook;
+use Syntatis\WPHook\Contracts\Hookable;
+use Syntatis\WPHook\Registry as WPHookRegistry;
 
-class Registry implements WithHook, JsonSerializable
+class Registry implements Hookable, JsonSerializable
 {
 	private int $strict = 0;
 
-	private Hook $hook;
+	private WPHookRegistry $hook;
 
 	private string $prefix = '';
 
@@ -30,7 +30,7 @@ class Registry implements WithHook, JsonSerializable
 		$this->strict = $strict;
 	}
 
-	public function hook(Hook $hook): void
+	public function hook(WPHookRegistry $hook): void
 	{
 		$this->hook = $hook;
 	}

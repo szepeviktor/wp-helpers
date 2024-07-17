@@ -11,7 +11,7 @@ use Syntatis\WPHelpers\Option\Option;
 use Syntatis\WPHelpers\Option\Registry;
 use Syntatis\WPHelpers\Option\Support\InputSanitizer;
 use Syntatis\WPHelpers\Tests\WPTestCase;
-use Syntatis\WPHook\Hook;
+use Syntatis\WPHook\Registry as WPWPHookRegistry;
 use WP_REST_Request;
 use WP_UnitTest_Factory;
 
@@ -19,7 +19,7 @@ class OptionTest extends WPTestCase
 {
 	private static int $administrator;
 
-	private Hook $hook;
+	private WPWPHookRegistry $hook;
 
 	private string $optionName = 'foo_bar';
 
@@ -30,7 +30,7 @@ class OptionTest extends WPTestCase
 	{
 		parent::set_up();
 
-		$this->hook = new Hook();
+		$this->hook = new WPWPHookRegistry();
 	}
 
 	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps

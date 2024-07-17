@@ -9,17 +9,17 @@ use Syntatis\WPHelpers\Option\NetworkOption;
 use Syntatis\WPHelpers\Option\Support\InputSanitizer;
 use Syntatis\WPHelpers\Option\Support\InputValidator;
 use Syntatis\WPHelpers\Option\Support\OutputResolver;
-use Syntatis\WPHook\Contract\WithHook;
-use Syntatis\WPHook\Hook;
+use Syntatis\WPHook\Contracts\Hookable;
+use Syntatis\WPHook\Registry as WPHookRegistry;
 
 use function array_key_exists;
 use function is_array;
 use function is_bool;
 use function trim;
 
-class NetworkOptionRegistry implements Registrable, WithHook
+class NetworkOptionRegistry implements Registrable, Hookable
 {
-	private Hook $hook;
+	private WPHookRegistry $hook;
 
 	private NetworkOption $option;
 
@@ -50,7 +50,7 @@ class NetworkOptionRegistry implements Registrable, WithHook
 		return $this->optionName;
 	}
 
-	public function hook(Hook $hook): void
+	public function hook(WPHookRegistry $hook): void
 	{
 		$this->hook = $hook;
 	}

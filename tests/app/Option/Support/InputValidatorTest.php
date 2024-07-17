@@ -10,19 +10,19 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Syntatis\WPHelpers\Option\Exceptions\TypeError;
 use Syntatis\WPHelpers\Option\Support\InputValidator;
 use Syntatis\WPHelpers\Tests\WPTestCase;
-use Syntatis\WPHook\Hook;
+use Syntatis\WPHook\Registry as WPWPHookRegistry;
 use TypeError as PHPTypeError;
 
 class InputValidatorTest extends WPTestCase
 {
-	private Hook $hook;
+	private WPWPHookRegistry $hook;
 
 	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 	public function set_up(): void
 	{
 		parent::set_up();
 
-		$this->hook = new Hook();
+		$this->hook = new WPWPHookRegistry();
 	}
 
 	/**

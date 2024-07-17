@@ -8,13 +8,13 @@ use Syntatis\WPHelpers\Option\NetworkOption;
 use Syntatis\WPHelpers\Option\Option;
 use Syntatis\WPHelpers\Option\Registry;
 use Syntatis\WPHelpers\Tests\WPTestCase;
-use Syntatis\WPHook\Hook;
+use Syntatis\WPHook\Registry as WPWPHookRegistry;
 
 use function json_encode;
 
 class RegistryTest extends WPTestCase
 {
-	private Hook $hook;
+	private WPWPHookRegistry $hook;
 
 	private string $optionGroup = 'tests';
 
@@ -23,7 +23,7 @@ class RegistryTest extends WPTestCase
 	{
 		parent::set_up();
 
-		$this->hook = new Hook();
+		$this->hook = new WPWPHookRegistry();
 	}
 
 	public function testUninstallOptions(): void

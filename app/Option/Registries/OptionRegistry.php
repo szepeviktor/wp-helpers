@@ -9,15 +9,15 @@ use Syntatis\WPHelpers\Option\Option;
 use Syntatis\WPHelpers\Option\Support\InputSanitizer;
 use Syntatis\WPHelpers\Option\Support\InputValidator;
 use Syntatis\WPHelpers\Option\Support\OutputResolver;
-use Syntatis\WPHook\Contract\WithHook;
-use Syntatis\WPHook\Hook;
+use Syntatis\WPHook\Contracts\Hookable;
+use Syntatis\WPHook\Registry as WPHookRegistry;
 
 use function array_merge;
 use function trim;
 
-class OptionRegistry implements Registrable, WithHook
+class OptionRegistry implements Registrable, Hookable
 {
-	private Hook $hook;
+	private WPHookRegistry $hook;
 
 	private Option $option;
 
@@ -61,7 +61,7 @@ class OptionRegistry implements Registrable, WithHook
 		return $this->optionName;
 	}
 
-	public function hook(Hook $hook): void
+	public function hook(WPHookRegistry $hook): void
 	{
 		$this->hook = $hook;
 	}

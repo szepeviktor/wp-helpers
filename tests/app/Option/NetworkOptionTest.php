@@ -11,12 +11,12 @@ use Syntatis\WPHelpers\Option\NetworkOption;
 use Syntatis\WPHelpers\Option\Registry;
 use Syntatis\WPHelpers\Option\Support\InputSanitizer;
 use Syntatis\WPHelpers\Tests\WPTestCase;
-use Syntatis\WPHook\Hook;
+use Syntatis\WPHook\Registry as WPWPHookRegistry;
 
 /** @group network-option */
 class NetworkOptionTest extends WPTestCase
 {
-	private Hook $hook;
+	private WPWPHookRegistry $hook;
 
 	private string $optionName = 'foo_bar';
 
@@ -25,7 +25,7 @@ class NetworkOptionTest extends WPTestCase
 	{
 		parent::set_up();
 
-		$this->hook = new Hook();
+		$this->hook = new WPWPHookRegistry();
 	}
 
 	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
