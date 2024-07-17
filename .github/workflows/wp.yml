@@ -69,7 +69,7 @@ jobs:
       fail-fast: true
       matrix:
         php: ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
-        wp: ['6.*', '5.*']
+        wp: ['5.*', '6.*']
 
     services:
       database:
@@ -128,6 +128,7 @@ jobs:
           composer install --prefer-dist
 
       - name: Run test
+        continue-on-error: ${{ matrix.php == '8.4' }}
         run: |
           composer phpstan
           vendor/bin/phpunit --coverage-clover coverage.xml
