@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Syntatis\WPHelpers\Asset;
 
+use InvalidArgumentException;
 use Syntatis\WPHelpers\Asset\Contracts\Enqueueable;
-use Syntatis\WPHelpers\Asset\Traits\FilePathDefiner;
+use Syntatis\WPHelpers\Asset\Traits\WithFilePathDefiner;
 
 use function pathinfo;
+use function str_ends_with;
 use function str_starts_with;
 use function Syntatis\Utils\is_blank;
 
@@ -16,7 +18,7 @@ use function Syntatis\Utils\is_blank;
  */
 class Style implements Enqueueable
 {
-	use FilePathDefiner;
+	use WithFilePathDefiner;
 
 	/**
 	 * The version of the script.
@@ -55,10 +57,18 @@ class Style implements Enqueueable
 	 */
 	public function __construct(string $filePath, ?string $handle = null)
 	{
-		$this->fileInfo = pathinfo(str_starts_with($filePath, '/') ? $filePath : '/' . $filePath);
+		if (! str_starts_with($filePath, '/')) {
+			throw new InvalidArgumentException('The file path must start with a leading slash.');
+		}
+
+		if (! str_ends_with($filePath, '.css')) {
+			throw new InvalidArgumentException('The file path must end with `.css`.');
+		}
+
+		$this->fileInfo = pathinfo($filePath);
 		$this->filePath = $this->definePath('.css');
 		$this->manifestPath = $this->definePath('.asset.php');
-		$this->handle = ! is_blank($handle) ? $handle  : $this->defineHandle();
+		$this->handle = is_blank($handle) ? $this->defineHandle() : $handle;
 	}
 
 	/** @phpstan-param non-empty-string $media */

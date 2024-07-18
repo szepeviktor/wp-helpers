@@ -4,11 +4,51 @@ declare(strict_types=1);
 
 namespace Syntatis\WPHelpers\Tests\Asset;
 
+use InvalidArgumentException;
 use Syntatis\WPHelpers\Asset\Style;
 use Syntatis\WPHelpers\Tests\WPTestCase;
 
 class StyleTest extends WPTestCase
 {
+	/** @dataProvider dataTestFilePathInvalid */
+	public function testFilePathInvalidExtension(string $filePath, string $errorMessage): void
+	{
+		$this->expectException(InvalidArgumentException::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		new Style($filePath);
+	}
+
+	public static function dataTestFilePathInvalid(): iterable
+	{
+		yield ['/index.scss', 'The file path must end with `.css`.'];
+		yield ['/script.scss', 'The file path must end with `.css`.'];
+
+		// Without leading slash.
+		yield ['index.css', 'The file path must start with a leading slash.'];
+		yield ['admin/script.css', 'The file path must start with a leading slash.'];
+
+		// With dashes.
+		yield ['/admin-style.scss', 'The file path must end with `.css`.'];
+		yield ['/admin-style.scss', 'The file path must end with `.css`.'];
+
+		// With dashes.
+		yield ['/admin_style.scss', 'The file path must end with `.css`.'];
+		yield ['/admin_style.tsx', 'The file path must end with `.css`.'];
+
+		// Sub-directories
+		yield ['/admin/index.scss', 'The file path must end with `.css`.'];
+		yield ['/admin/index.scss', 'The file path must end with `.css`.'];
+		yield ['/admin/style.scss', 'The file path must end with `.css`.'];
+		yield ['/admin/style.scss', 'The file path must end with `.css`.'];
+
+		// Nested sub-directories
+		yield ['/admin/app/index.scss', 'The file path must end with `.css`.'];
+		yield ['/admin/app/index.scss', 'The file path must end with `.css`.'];
+		yield ['/admin/app/style.scss', 'The file path must end with `.css`.'];
+		yield ['/admin/app/style.scss', 'The file path must end with `.css`.'];
+	}
+
 	/** @dataProvider dataGetHandle */
 	public function testGetHandle(string $filePath, string $expected): void
 	{
@@ -17,22 +57,22 @@ class StyleTest extends WPTestCase
 
 	public static function dataGetHandle(): iterable
 	{
-		yield ['/index.scss', 'index'];
-		yield ['/style.scss', 'style'];
+		yield ['/index.css', 'index'];
+		yield ['/style.css', 'style'];
 		yield ['/style.min.css', 'style-min'];
 
 		// With dashes.
-		yield ['/admin-style.scss', 'admin-style'];
+		yield ['/admin-style.css', 'admin-style'];
 		yield ['/admin-style.min.css', 'admin-style-min'];
 
 		// Sub-directories.
-		yield ['/admin/index.scss', 'admin-index'];
-		yield ['/admin/style.scss', 'admin-style'];
+		yield ['/admin/index.css', 'admin-index'];
+		yield ['/admin/style.css', 'admin-style'];
 		yield ['/admin/style.min.css', 'admin-style-min'];
 
 		// Nested Sub-directories.
-		yield ['/admin/app/index.scss', 'admin-app-index'];
-		yield ['/admin/app/style.scss', 'admin-app-style'];
+		yield ['/admin/app/index.css', 'admin-app-index'];
+		yield ['/admin/app/style.css', 'admin-app-style'];
 		yield ['/admin/app/style.min.css', 'admin-app-style-min'];
 	}
 
@@ -47,8 +87,8 @@ class StyleTest extends WPTestCase
 
 	public static function dataGetHandleFromArg(): iterable
 	{
-		yield ['/index.scss'];
-		yield ['/style.scss'];
+		yield ['/index.css'];
+		yield ['/style.css'];
 	}
 
 	/** @dataProvider dataGetFilePath */
@@ -60,23 +100,20 @@ class StyleTest extends WPTestCase
 	public static function dataGetFilePath(): iterable
 	{
 		yield ['/index.css', '/index.css'];
-		yield ['/index.scss', '/index.css'];
 		yield ['/style.css', '/style.css'];
-		yield ['/style.scss', '/style.css'];
 		yield ['/style.min.css', '/style.min.css'];
 
 		// With dashes.
 		yield ['/admin-style.css', '/admin-style.css'];
-		yield ['/admin-style.scss', '/admin-style.css'];
 
 		// Sub-directories.
-		yield ['/admin/index.scss', '/admin/index.css'];
-		yield ['/admin/style.scss', '/admin/style.css'];
+		yield ['/admin/index.css', '/admin/index.css'];
+		yield ['/admin/style.css', '/admin/style.css'];
 		yield ['/admin/style.min.css', '/admin/style.min.css'];
 
 		// Nested sub-directories.
 		yield ['/admin/app/index.css', '/admin/app/index.css'];
-		yield ['/admin/app/index.scss', '/admin/app/index.css'];
+		yield ['/admin/app/style.css', '/admin/app/style.css'];
 	}
 
 	public function testOnMedia(): void

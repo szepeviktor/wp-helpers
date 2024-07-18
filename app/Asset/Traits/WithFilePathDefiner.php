@@ -10,7 +10,7 @@ use function Syntatis\Utils\kebabcased;
 
 use const DIRECTORY_SEPARATOR;
 
-trait FilePathDefiner
+trait WithFilePathDefiner
 {
 	/** @var array{dirname:string,basename:string,extension?:string,filename:string} */
 	protected array $fileInfo;

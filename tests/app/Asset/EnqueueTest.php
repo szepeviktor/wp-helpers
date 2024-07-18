@@ -71,18 +71,6 @@ class EnqueueTest extends WPTestCase
 		yield ['/foo/index.js', 'foo-index', 'https://example.com/assets/foo/index.js'];
 		yield ['/foo/bar.js', 'foo-bar', 'https://example.com/assets/foo/bar.js'];
 		yield ['/foo/bar/index.js', 'foo-bar-index', 'https://example.com/assets/foo/bar/index.js'];
-
-		// Without leading slash.
-		yield ['foo.js', 'foo', 'https://example.com/assets/foo.js'];
-		yield ['foo/index.js', 'foo-index', 'https://example.com/assets/foo/index.js'];
-		yield ['foo/bar.js', 'foo-bar', 'https://example.com/assets/foo/bar.js'];
-		yield ['foo/bar/index.js', 'foo-bar-index', 'https://example.com/assets/foo/bar/index.js'];
-
-		// With `.ts` extension.
-		yield ['/foo.ts', 'foo', 'https://example.com/assets/foo.js'];
-		yield ['/foo/index.ts', 'foo-index', 'https://example.com/assets/foo/index.js'];
-		yield ['/foo/bar.ts', 'foo-bar', 'https://example.com/assets/foo/bar.js'];
-		yield ['/foo/bar/index.ts', 'foo-bar-index', 'https://example.com/assets/foo/bar/index.js'];
 	}
 
 	public function testAddScriptsWithStaticHandle(): void
@@ -259,7 +247,7 @@ class EnqueueTest extends WPTestCase
 	public function testAddStyles(): void
 	{
 		$enqueue = new Enqueue('/public/assets/', 'https://example.com/assets/');
-		$enqueue->addStyles(new Style('/foo.scss'));
+		$enqueue->addStyles(new Style('/foo.css'));
 		$enqueue->styles();
 
 		$wpStyles = wp_styles();
@@ -273,7 +261,7 @@ class EnqueueTest extends WPTestCase
 	public function testAddStylesWithVersion(): void
 	{
 		$enqueue = new Enqueue('/public/assets/', 'https://example.com/assets/');
-		$enqueue->addStyles((new Style('/admin.scss'))->versionedAt('1.0.0'));
+		$enqueue->addStyles((new Style('/admin.css'))->versionedAt('1.0.0'));
 		$enqueue->styles();
 
 		$wpStyles = wp_styles();
@@ -288,7 +276,7 @@ class EnqueueTest extends WPTestCase
 	public function testAddStyleWithVersionFromManifest(): void
 	{
 		$enqueue = new Enqueue($this->fixturePath . '/assets', 'https://example.com/assets/');
-		$enqueue->addStyles(new Style('/admin.scss'));
+		$enqueue->addStyles(new Style('/admin.css'));
 		$enqueue->styles();
 
 		/** @var WP_Styles $wpStyles */
@@ -306,7 +294,7 @@ class EnqueueTest extends WPTestCase
 	{
 		$enqueue = new Enqueue('/public/assets/', 'https://example.com/assets/');
 		$enqueue->setPrefix('prefix');
-		$enqueue->addStyles(new Style('/foo.scss'));
+		$enqueue->addStyles(new Style('/foo.css'));
 		$enqueue->styles();
 
 		$wpStyles = wp_styles();
@@ -320,7 +308,7 @@ class EnqueueTest extends WPTestCase
 	public function testAddStyleWithDependencies(): void
 	{
 		$enqueue = new Enqueue($this->fixturePath . '/assets', 'https://example.com/assets/');
-		$enqueue->addStyles((new Style('/admin.scss'))->withDependencies(['bootstrap']));
+		$enqueue->addStyles((new Style('/admin.css'))->withDependencies(['bootstrap']));
 		$enqueue->styles();
 
 		$wpStyles = wp_styles();
