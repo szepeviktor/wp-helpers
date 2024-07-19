@@ -105,6 +105,16 @@ class OptionRegistry implements Registrable, Hookable
 			2,
 		);
 
+		$this->hook->addFilter(
+			'pre_update_option_' . $this->optionName,
+			static function ($newValue) use ($inputValidator) {
+				$inputValidator->validate($newValue);
+
+				return $newValue;
+			},
+			$optionPriority,
+		);
+
 		$this->hook->addAction(
 			'update_option_' . $this->optionName,
 			static fn ($oldValue, $newValue) => $inputValidator->validate($newValue),
