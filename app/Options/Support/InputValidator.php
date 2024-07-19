@@ -108,7 +108,7 @@ class InputValidator
 	/** @param mixed $value */
 	private function validateWithConstraints($value): void
 	{
-		if (! is_array($this->constraints) || $this->constraints === []) {
+		if (! is_non_empty_array($this->constraints)) {
 			return;
 		}
 
