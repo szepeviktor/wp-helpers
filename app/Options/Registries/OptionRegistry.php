@@ -73,7 +73,7 @@ class OptionRegistry implements Registrable, Hookable
 
 		$inputSanitizer = new InputSanitizer();
 		$outputResolver = new OutputResolver($optionType, $this->strict);
-		$inputValidator = new InputValidator($optionType, $this->strict);
+		$inputValidator = new InputValidator($optionType, $this->optionName, $this->strict);
 		$inputValidator->setConstraints($this->option->getConstraints());
 		$sanitizeCallback = static fn ($value) => $inputSanitizer->sanitize($value);
 

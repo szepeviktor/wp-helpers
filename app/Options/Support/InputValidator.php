@@ -19,6 +19,8 @@ use function is_callable;
 use function is_float;
 use function is_int;
 use function is_string;
+use function sprintf;
+use function Syntatis\Utils\is_blank;
 
 /**
  * @phpstan-import-type Constraints from Option
@@ -26,6 +28,8 @@ use function is_string;
  */
 class InputValidator
 {
+	private string $optionName;
+
 	/** @phpstan-var ValueType */
 	private string $type;
 
@@ -35,9 +39,10 @@ class InputValidator
 	private array $constraints = [];
 
 	/** @phpstan-param ValueType $type */
-	public function __construct(string $type, int $strict = 0)
+	public function __construct(string $type, string $optionName, int $strict = 0)
 	{
 		$this->type = $type;
+		$this->optionName = $optionName;
 		$this->strict = $strict;
 	}
 
@@ -111,8 +116,14 @@ class InputValidator
 			if (is_callable($constraint)) {
 				$result = $constraint($value);
 
+				if (is_string($result) && ! is_blank($result)) {
+					throw new InvalidArgumentException($result);
+				}
+
 				if ($result === false) {
-					throw new InvalidArgumentException('Value does not match the given constraints.');
+					throw new InvalidArgumentException(
+						sprintf('The value of %s does not match the constraint.', $this->optionName),
+					);
 				}
 			}
 
