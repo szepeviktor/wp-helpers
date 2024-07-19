@@ -116,20 +116,20 @@ class StyleTest extends WPTestCase
 		yield ['/admin/app/style.css', '/admin/app/style.css'];
 	}
 
-	public function testOnMedia(): void
+	public function testForMedia(): void
 	{
 		$style = new Style('/style.css');
 
 		$this->assertSame('all', $style->getMedia());
 
-		$style = $style->onMedia('print');
+		$style = $style->forMedia('print');
 
 		$this->assertSame('print', $style->getMedia());
 	}
 
-	public function testWithDependencies(): void
+	public function testDependsOn(): void
 	{
-		$style = (new Style('/style.css'))->withDependencies(['main']);
+		$style = (new Style('/style.css'))->dependsOn('main');
 
 		$this->assertSame(['main'], $style->getDependencies());
 	}

@@ -132,7 +132,7 @@ class EnqueueTest extends WPTestCase
 		$this->assertSame('7cb1493e4611c2ec1223', $wpScripts->registered['admin']->ver);
 	}
 
-	public function testAddScriptsWithDependenciesFromManifest(): void
+	public function testAddScriptsDependenciesFromManifest(): void
 	{
 		$enqueue = new Enqueue($this->fixturePath . '/assets', 'https://example.com/assets');
 		$enqueue->addScripts(new Script('/admin.js'));
@@ -148,10 +148,10 @@ class EnqueueTest extends WPTestCase
 		$this->assertSame(['react', 'react-dom', 'wp-api-fetch', 'wp-dom-ready', 'wp-i18n'], $wpScripts->registered['admin']->deps);
 	}
 
-	public function testAddScriptsWithDependenciesFromManifestAndArgs(): void
+	public function testAddScriptsDependenciesFromManifestAndArgs(): void
 	{
 		$enqueue = new Enqueue($this->fixturePath . '/assets', 'https://example.com/assets/');
-		$enqueue->addScripts((new Script('/admin.js'))->withDependencies(['vue']));
+		$enqueue->addScripts((new Script('/admin.js'))->dependsOn('vue'));
 		$enqueue->scripts();
 
 		$wpScripts = wp_scripts();
@@ -305,10 +305,10 @@ class EnqueueTest extends WPTestCase
 		$this->assertSame('https://example.com/assets/foo.css', $wpStyles->registered['prefix-foo']->src);
 	}
 
-	public function testAddStyleWithDependencies(): void
+	public function testAddStyleDependsOn(): void
 	{
 		$enqueue = new Enqueue($this->fixturePath . '/assets', 'https://example.com/assets/');
-		$enqueue->addStyles((new Style('/admin.css'))->withDependencies(['bootstrap']));
+		$enqueue->addStyles((new Style('/admin.css'))->dependsOn('bootstrap'));
 		$enqueue->styles();
 
 		$wpStyles = wp_styles();

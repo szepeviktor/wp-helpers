@@ -182,4 +182,11 @@ class ScriptTest extends WPTestCase
 
 		$this->assertFalse($script->isTranslated());
 	}
+
+	public function testDependsOn(): void
+	{
+		$script = (new Script('/style.js'))->dependsOn('wp-component');
+
+		$this->assertSame(['wp-component'], $script->getDependencies());
+	}
 }

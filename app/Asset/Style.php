@@ -72,7 +72,7 @@ class Style implements Enqueueable
 	}
 
 	/** @phpstan-param non-empty-string $media */
-	public function onMedia(string $media = 'all'): self
+	public function forMedia(string $media): self
 	{
 		$self = clone $this;
 		$self->media = $media;
@@ -89,8 +89,8 @@ class Style implements Enqueueable
 		return $self;
 	}
 
-	/** @phpstan-param array<non-empty-string> $dependencies */
-	public function withDependencies(array $dependencies): self
+	/** @phpstan-param non-empty-string ...$dependencies */
+	public function dependsOn(string ...$dependencies): self
 	{
 		$self = clone $this;
 		$self->dependencies = $dependencies;
