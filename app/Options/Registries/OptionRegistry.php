@@ -99,27 +99,29 @@ class OptionRegistry implements Registrable, Hookable
 		);
 
 		$this->hook->addAction(
-			'add_option_' . $this->optionName,
-			static fn ($name, $value) => $inputValidator->validate($value),
-			$optionPriority,
-			2,
-		);
+			'add_option',
+			function ($optionName, $value) use ($inputValidator): void {
+				if ($optionName !== $this->optionName) {
+					return;
+				}
 
-		$this->hook->addFilter(
-			'pre_update_option_' . $this->optionName,
-			static function ($newValue) use ($inputValidator) {
-				$inputValidator->validate($newValue);
-
-				return $newValue;
+				$inputValidator->validate($value);
 			},
 			$optionPriority,
+			2,
 		);
 
 		$this->hook->addAction(
-			'update_option_' . $this->optionName,
-			static fn ($oldValue, $newValue) => $inputValidator->validate($newValue),
+			'update_option',
+			function ($optionName, $oldValue, $newValue) use ($inputValidator): void {
+				if ($optionName !== $this->optionName) {
+					return;
+				}
+
+				$inputValidator->validate($newValue);
+			},
 			$optionPriority,
-			2,
+			3,
 		);
 
 		if (! $this->settingGroup) {
