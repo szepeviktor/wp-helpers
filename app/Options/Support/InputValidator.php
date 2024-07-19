@@ -117,12 +117,14 @@ class InputValidator
 				$result = $constraint($value);
 
 				if (is_string($result) && ! is_blank($result)) {
-					throw new InvalidArgumentException($result);
+					throw new InvalidArgumentException(
+						sprintf('%s: %s', $this->optionName, $result),
+					);
 				}
 
 				if ($result === false) {
 					throw new InvalidArgumentException(
-						sprintf('The value of %s does not match the constraint.', $this->optionName),
+						sprintf('%s: The value does not match the constraint.', $this->optionName),
 					);
 				}
 			}
