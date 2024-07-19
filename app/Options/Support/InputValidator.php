@@ -124,7 +124,7 @@ class InputValidator
 
 				if ($result === false) {
 					throw new InvalidArgumentException(
-						sprintf('[%s] The value does not match the constraint.', $this->optionName),
+						sprintf('[%s] Invalid value.', $this->optionName),
 					);
 				}
 			}
