@@ -28,15 +28,13 @@ class InputValidatorTest extends WPTestCase
 	/**
 	 * @dataProvider dataValidateInvalidValueType
 	 *
-	 * @param mixed $value     The value to validate.
-	 * @param mixed $givenType The type of the value to validate.
+	 * @param mixed $value The value to validate.
 	 */
-	public function testValidateInvalidValueType(string $type, $value, $givenType): void
+	public function testValidateInvalidValueType(string $type, $value): void
 	{
 		$validator = new InputValidator($type);
 
-		$this->expectException(TypeError::class);
-		$this->expectExceptionMessage('Value must be of type ' . $type . ', ' . $givenType . ' given.');
+		$this->expectNotToPerformAssertions();
 
 		$validator->validate($value);
 	}
@@ -49,6 +47,38 @@ class InputValidatorTest extends WPTestCase
 	public function testValidateInvalidType(string $type): void
 	{
 		$validator = new InputValidator($type);
+
+		$this->expectNotToPerformAssertions();
+
+		$validator->validate($type, 'foo');
+	}
+
+	/**
+	 * @dataProvider dataValidateInvalidValueType
+	 * @group strict-mode
+	 *
+	 * @param mixed $value     The value to validate.
+	 * @param mixed $givenType The type of the value to validate.
+	 */
+	public function testValidateInvalidValueTypeStrict(string $type, $value, $givenType): void
+	{
+		$validator = new InputValidator($type, 1);
+
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage('Value must be of type ' . $type . ', ' . $givenType . ' given.');
+
+		$validator->validate($value);
+	}
+
+	/**
+	 * @dataProvider dataValidateInvalidType
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to validate.
+	 */
+	public function testValidateInvalidTypeStrict(string $type): void
+	{
+		$validator = new InputValidator($type, 1);
 
 		$this->expectException(PHPTypeError::class);
 		$this->expectExceptionMessage('Unable to validate of type ' . $type . '.');
@@ -66,10 +96,12 @@ class InputValidatorTest extends WPTestCase
 	 */
 	public function testConstraints(string $type, array $constraints, $value, string $errorMessage): void
 	{
+		$validator = new InputValidator($type);
+		$validator->setConstraints($constraints);
+
 		$this->expectException(InvalidArgumentException::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		$validator = new InputValidator($type, $constraints);
 		$validator->validate($value);
 	}
 
@@ -82,9 +114,49 @@ class InputValidatorTest extends WPTestCase
 	 */
 	public function testInvalidConstraints(string $type, array $constraints, $value): void
 	{
+		$validator = new InputValidator($type);
+		$validator->setConstraints($constraints);
+
 		$this->expectNotToPerformAssertions();
 
-		$validator = new InputValidator($type, $constraints);
+		$validator->validate($value);
+	}
+
+	/**
+	 * @dataProvider dataConstraints
+	 * @group strict-mode
+	 *
+	 * @param string       $type         The type of the value to validate.
+	 * @param array<mixed> $constraints  List of constraints to validate against.
+	 * @param mixed        $value        The value to validate.
+	 * @param string       $errorMessage The error message to expect.
+	 */
+	public function testConstraintsStrict(string $type, array $constraints, $value, string $errorMessage): void
+	{
+		$validator = new InputValidator($type, 1);
+		$validator->setConstraints($constraints);
+
+		$this->expectException(InvalidArgumentException::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		$validator->validate($value);
+	}
+
+	/**
+	 * @dataProvider dataInvalidConstraints
+	 * @group strict-mode
+	 *
+	 * @param string       $type        The type of the value to validate.
+	 * @param array<mixed> $constraints List of constraints to validate against.
+	 * @param mixed        $value       The value to validate.
+	 */
+	public function testInvalidConstraintsStrict(string $type, array $constraints, $value): void
+	{
+		$validator = new InputValidator($type, 1);
+		$validator->setConstraints($constraints);
+
+		$this->expectNotToPerformAssertions();
+
 		$validator->validate($value);
 	}
 

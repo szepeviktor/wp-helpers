@@ -65,8 +65,9 @@ class NetworkOptionRegistry implements Registrable, Hookable
 		$optionPriority = $this->option->getPriority();
 
 		$inputSanitizer = new InputSanitizer();
-		$inputValidator = new InputValidator($optionType, $this->option->getConstraints());
 		$outputResolver = new OutputResolver($optionType, $this->strict);
+		$inputValidator = new InputValidator($optionType, $this->strict);
+		$inputValidator->setConstraints($this->option->getConstraints());
 
 		$this->hook->addFilter(
 			'pre_add_site_option_' . $this->optionName,

@@ -17,13 +17,13 @@ use WP_UnitTest_Factory;
 
 class OptionTest extends WPTestCase
 {
-	private static int $administrator;
-
 	private WPWPHookRegistry $hook;
 
-	private string $optionName = 'foo_bar';
+	private static int $administrator;
 
-	private string $optionGroup = 'tests';
+	private static string $optionName = 'foo_bar';
+
+	private static string $optionGroup = 'tests';
 
 	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 	public function set_up(): void
@@ -36,7 +36,7 @@ class OptionTest extends WPTestCase
 	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 	public function tear_down(): void
 	{
-		delete_option($this->optionName);
+		delete_option(self::$optionName);
 
 		parent::tear_down();
 	}
@@ -54,9 +54,9 @@ class OptionTest extends WPTestCase
 	/** @testdox should return the name */
 	public function testName(): void
 	{
-		$option = new Option($this->optionName, 'string');
+		$option = new Option(self::$optionName, 'string');
 
-		$this->assertEquals($this->optionName, $option->getName());
+		$this->assertEquals(self::$optionName, $option->getName());
 	}
 
 	/** @testdox should throw error when name is blank */
@@ -69,12 +69,12 @@ class OptionTest extends WPTestCase
 	/** @testdox should set and return the constraints */
 	public function testConstraints(): void
 	{
-		$option = new Option($this->optionName, 'string');
+		$option = new Option(self::$optionName, 'string');
 		$option = $option->withConstraints('is_string');
 
 		$this->assertEquals(['is_string'], $option->getConstraints());
 
-		$option = new Option($this->optionName, 'string');
+		$option = new Option(self::$optionName, 'string');
 		$option = $option->withConstraints('is_string', 'is_numeric');
 
 		$this->assertEquals(
@@ -86,7 +86,7 @@ class OptionTest extends WPTestCase
 	/** @testdox should set and return the priority */
 	public function testPriority(): void
 	{
-		$option = new Option($this->optionName, 'string');
+		$option = new Option(self::$optionName, 'string');
 
 		$this->assertSame(99, $option->getPriority());
 
@@ -98,7 +98,7 @@ class OptionTest extends WPTestCase
 	/** @testdox should set and return the default value set */
 	public function testSettingArgsDefault(): void
 	{
-		$option = (new Option($this->optionName, 'string'))->withDefault('bar');
+		$option = (new Option(self::$optionName, 'string'))->withDefault('bar');
 
 		$this->assertEquals(
 			[
@@ -112,8 +112,7 @@ class OptionTest extends WPTestCase
 	/** @testdox should set and return the description */
 	public function testSettingArgsDescription(): void
 	{
-		$option = (new Option($this->optionName, 'string'))
-			->withDescription('This is the description');
+		$option = (new Option(self::$optionName, 'string'))->withDescription('This is the description');
 
 		$this->assertEquals(
 			[
@@ -133,7 +132,7 @@ class OptionTest extends WPTestCase
 	 */
 	public function testSettingArgsTypeAPIConfig($config): void
 	{
-		$option = (new Option($this->optionName, 'string'))->apiEnabled($config);
+		$option = (new Option(self::$optionName, 'string'))->apiEnabled($config);
 
 		$this->assertEquals(
 			$config,
@@ -176,16 +175,16 @@ class OptionTest extends WPTestCase
 
 		$this->hook->register();
 
-		$this->assertNull(get_option($this->optionName));
+		$this->assertNull(get_option(self::$optionName));
 	}
 
 	public function dataRegistryNoDefaultSet(): iterable
 	{
-		yield [[new Option($this->optionName, 'string')]];
-		yield [[new Option($this->optionName, 'boolean')]];
-		yield [[new Option($this->optionName, 'integer')]];
-		yield [[new Option($this->optionName, 'number')]];
-		yield [[new Option($this->optionName, 'array')]];
+		yield [[new Option(self::$optionName, 'string')]];
+		yield [[new Option(self::$optionName, 'boolean')]];
+		yield [[new Option(self::$optionName, 'integer')]];
+		yield [[new Option(self::$optionName, 'number')]];
+		yield [[new Option(self::$optionName, 'array')]];
 	}
 
 	/**
@@ -204,7 +203,7 @@ class OptionTest extends WPTestCase
 
 		$this->hook->register();
 
-		$this->assertSame($return, get_option($this->optionName));
+		$this->assertSame($return, get_option(self::$optionName));
 	}
 
 	/**
@@ -212,21 +211,21 @@ class OptionTest extends WPTestCase
 	 */
 	public function dataRegistryDefaultSet(): iterable
 	{
-		yield [[(new Option($this->optionName, 'string'))->withDefault(123)], '123'];
-		yield [[(new Option($this->optionName, 'boolean'))->withDefault('')], false];
-		yield [[(new Option($this->optionName, 'boolean'))->withDefault(1)], true];
-		yield [[(new Option($this->optionName, 'integer'))->withDefault('123')], 123];
-		yield [[(new Option($this->optionName, 'array'))->withDefault('foo')], ['foo']];
-		yield [[(new Option($this->optionName, 'array'))->withDefault(['foo' => 'bar'])], ['foo' => 'bar']];
-		yield [[(new Option($this->optionName, 'number'))->withDefault('12.3')], 12.3];
-		yield [[(new Option($this->optionName, 'number'))->withDefault('123')], 123];
+		yield [[(new Option(self::$optionName, 'string'))->withDefault(123)], '123'];
+		yield [[(new Option(self::$optionName, 'boolean'))->withDefault('')], false];
+		yield [[(new Option(self::$optionName, 'boolean'))->withDefault(1)], true];
+		yield [[(new Option(self::$optionName, 'integer'))->withDefault('123')], 123];
+		yield [[(new Option(self::$optionName, 'array'))->withDefault('foo')], ['foo']];
+		yield [[(new Option(self::$optionName, 'array'))->withDefault(['foo' => 'bar'])], ['foo' => 'bar']];
+		yield [[(new Option(self::$optionName, 'number'))->withDefault('12.3')], 12.3];
+		yield [[(new Option(self::$optionName, 'number'))->withDefault('123')], 123];
 
 		// The `null` value should be defaulted to `null`.
-		yield [[(new Option($this->optionName, 'string'))->withDefault(null)], null];
-		yield [[(new Option($this->optionName, 'number'))->withDefault(null)], null];
-		yield [[(new Option($this->optionName, 'boolean'))->withDefault(null)], null];
-		yield [[(new Option($this->optionName, 'integer'))->withDefault(null)], null];
-		yield [[(new Option($this->optionName, 'array'))->withDefault(null)], null];
+		yield [[(new Option(self::$optionName, 'string'))->withDefault(null)], null];
+		yield [[(new Option(self::$optionName, 'number'))->withDefault(null)], null];
+		yield [[(new Option(self::$optionName, 'boolean'))->withDefault(null)], null];
+		yield [[(new Option(self::$optionName, 'integer'))->withDefault(null)], null];
+		yield [[(new Option(self::$optionName, 'array'))->withDefault(null)], null];
 	}
 
 	/**
@@ -246,27 +245,27 @@ class OptionTest extends WPTestCase
 
 		$this->hook->register();
 
-		$this->assertSame($return, get_option($this->optionName));
+		$this->assertSame($return, get_option(self::$optionName));
 	}
 
 	public function dataRegistryDefaultSetStrictValid(): iterable
 	{
-		yield [[(new Option($this->optionName, 'string'))->withDefault('Hello World!')], 'Hello World!'];
-		yield [[(new Option($this->optionName, 'boolean'))->withDefault(true)], true];
-		yield [[(new Option($this->optionName, 'boolean'))->withDefault(false)], false];
-		yield [[(new Option($this->optionName, 'integer'))->withDefault(1)], 1];
-		yield [[(new Option($this->optionName, 'integer'))->withDefault(-1)], -1];
-		yield [[(new Option($this->optionName, 'number'))->withDefault(1)], 1];
-		yield [[(new Option($this->optionName, 'number'))->withDefault(1.1)], 1.1];
-		yield [[(new Option($this->optionName, 'array'))->withDefault([1])], [1]];
-		yield [[(new Option($this->optionName, 'array'))->withDefault(['foo' => 'bar'])], ['foo' => 'bar']];
+		yield [[(new Option(self::$optionName, 'string'))->withDefault('Hello World!')], 'Hello World!'];
+		yield [[(new Option(self::$optionName, 'boolean'))->withDefault(true)], true];
+		yield [[(new Option(self::$optionName, 'boolean'))->withDefault(false)], false];
+		yield [[(new Option(self::$optionName, 'integer'))->withDefault(1)], 1];
+		yield [[(new Option(self::$optionName, 'integer'))->withDefault(-1)], -1];
+		yield [[(new Option(self::$optionName, 'number'))->withDefault(1)], 1];
+		yield [[(new Option(self::$optionName, 'number'))->withDefault(1.1)], 1.1];
+		yield [[(new Option(self::$optionName, 'array'))->withDefault([1])], [1]];
+		yield [[(new Option(self::$optionName, 'array'))->withDefault(['foo' => 'bar'])], ['foo' => 'bar']];
 
 		// The `null` value should be defaulted to `null`.
-		yield [[(new Option($this->optionName, 'string'))->withDefault(null)], null];
-		yield [[(new Option($this->optionName, 'number'))->withDefault(null)], null];
-		yield [[(new Option($this->optionName, 'boolean'))->withDefault(null)], null];
-		yield [[(new Option($this->optionName, 'integer'))->withDefault(null)], null];
-		yield [[(new Option($this->optionName, 'array'))->withDefault(null)], null];
+		yield [[(new Option(self::$optionName, 'string'))->withDefault(null)], null];
+		yield [[(new Option(self::$optionName, 'number'))->withDefault(null)], null];
+		yield [[(new Option(self::$optionName, 'boolean'))->withDefault(null)], null];
+		yield [[(new Option(self::$optionName, 'integer'))->withDefault(null)], null];
+		yield [[(new Option(self::$optionName, 'array'))->withDefault(null)], null];
 	}
 
 	/**
@@ -288,19 +287,19 @@ class OptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($message);
 
-		get_option($this->optionName);
+		get_option(self::$optionName);
 	}
 
 	public function dataRegistryDefaultSetStrictInvalid(): iterable
 	{
-		yield [[(new Option($this->optionName, 'string'))->withDefault(true)], 'Value must be of type string, boolean given.'];
-		yield [[(new Option($this->optionName, 'boolean'))->withDefault('true')], 'Value must be of type boolean, string given.'];
-		yield [[(new Option($this->optionName, 'boolean'))->withDefault(0)], 'Value must be of type boolean, integer given.'];
-		yield [[(new Option($this->optionName, 'integer'))->withDefault(1.1)], 'Value must be of type integer, number (float) given.'];
-		yield [[(new Option($this->optionName, 'integer'))->withDefault('-1')], 'Value must be of type integer, string given.'];
-		yield [[(new Option($this->optionName, 'number'))->withDefault([1])], 'Value must be of type number, array given.'];
-		yield [[(new Option($this->optionName, 'number'))->withDefault(false)], 'Value must be of type number, boolean given.'];
-		yield [[(new Option($this->optionName, 'array'))->withDefault('foo')], 'Value must be of type array, string given.'];
+		yield [[(new Option(self::$optionName, 'string'))->withDefault(true)], 'Value must be of type string, boolean given.'];
+		yield [[(new Option(self::$optionName, 'boolean'))->withDefault('true')], 'Value must be of type boolean, string given.'];
+		yield [[(new Option(self::$optionName, 'boolean'))->withDefault(0)], 'Value must be of type boolean, integer given.'];
+		yield [[(new Option(self::$optionName, 'integer'))->withDefault(1.1)], 'Value must be of type integer, number (float) given.'];
+		yield [[(new Option(self::$optionName, 'integer'))->withDefault('-1')], 'Value must be of type integer, string given.'];
+		yield [[(new Option(self::$optionName, 'number'))->withDefault([1])], 'Value must be of type number, array given.'];
+		yield [[(new Option(self::$optionName, 'number'))->withDefault(false)], 'Value must be of type number, boolean given.'];
+		yield [[(new Option(self::$optionName, 'array'))->withDefault('foo')], 'Value must be of type array, string given.'];
 	}
 
 	/**
@@ -318,7 +317,7 @@ class OptionTest extends WPTestCase
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertSame($coerced, get_option($this->optionName, $defaultPassed));
+		$this->assertSame($coerced, get_option(self::$optionName, $defaultPassed));
 	}
 
 	/**
@@ -326,14 +325,14 @@ class OptionTest extends WPTestCase
 	 */
 	public function dataRegistryDefaultPassed(): iterable
 	{
-		yield [[(new Option($this->optionName, 'string'))->withDefault('Hello World')], 123, '123'];
-		yield [[(new Option($this->optionName, 'boolean'))->withDefault(false)], 'true', true];
-		yield [[(new Option($this->optionName, 'boolean'))->withDefault(true)], '', false];
-		yield [[(new Option($this->optionName, 'boolean'))->withDefault(true)], false, false];
-		yield [[(new Option($this->optionName, 'integer'))->withDefault(1)], '2', 2];
-		yield [[(new Option($this->optionName, 'number'))->withDefault(1.2)], '2.5', 2.5];
-		yield [[(new Option($this->optionName, 'number'))->withDefault(1)], '2', 2];
-		yield [[(new Option($this->optionName, 'array'))->withDefault(['foo'])], 'bar', ['bar']];
+		yield [[(new Option(self::$optionName, 'string'))->withDefault('Hello World')], 123, '123'];
+		yield [[(new Option(self::$optionName, 'boolean'))->withDefault(false)], 'true', true];
+		yield [[(new Option(self::$optionName, 'boolean'))->withDefault(true)], '', false];
+		yield [[(new Option(self::$optionName, 'boolean'))->withDefault(true)], false, false];
+		yield [[(new Option(self::$optionName, 'integer'))->withDefault(1)], '2', 2];
+		yield [[(new Option(self::$optionName, 'number'))->withDefault(1.2)], '2.5', 2.5];
+		yield [[(new Option(self::$optionName, 'number'))->withDefault(1)], '2', 2];
+		yield [[(new Option(self::$optionName, 'array'))->withDefault(['foo'])], 'bar', ['bar']];
 	}
 
 	/**
@@ -351,25 +350,25 @@ class OptionTest extends WPTestCase
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertSame($defaultPassed, get_option($this->optionName, $defaultPassed));
+		$this->assertSame($defaultPassed, get_option(self::$optionName, $defaultPassed));
 	}
 
 	public function dataRegistryDefaultPassedStrictValid(): iterable
 	{
-		yield [[(new Option($this->optionName, 'string'))->withDefault('Foo Bar')], null];
-		yield [[(new Option($this->optionName, 'string'))->withDefault('Hello World')], '123'];
-		yield [[(new Option($this->optionName, 'boolean'))->withDefault(true)], null];
-		yield [[(new Option($this->optionName, 'boolean'))->withDefault(true)], false];
-		yield [[(new Option($this->optionName, 'integer'))->withDefault(1)], null];
-		yield [[(new Option($this->optionName, 'integer'))->withDefault(1)], 2];
-		yield [[(new Option($this->optionName, 'number'))->withDefault(1)], null];
-		yield [[(new Option($this->optionName, 'number'))->withDefault(1)], 2];
-		yield [[(new Option($this->optionName, 'number'))->withDefault(1.2)], null];
-		yield [[(new Option($this->optionName, 'number'))->withDefault(1.2)], 2.3];
-		yield [[(new Option($this->optionName, 'array'))->withDefault(['foo'])], null];
-		yield [[(new Option($this->optionName, 'array'))->withDefault(['foo'])], ['foo']];
-		yield [[(new Option($this->optionName, 'array'))->withDefault(['foo' => 'bar'])], null];
-		yield [[(new Option($this->optionName, 'array'))->withDefault(['foo' => 'bar'])], ['foo' => 'bar']];
+		yield [[(new Option(self::$optionName, 'string'))->withDefault('Foo Bar')], null];
+		yield [[(new Option(self::$optionName, 'string'))->withDefault('Hello World')], '123'];
+		yield [[(new Option(self::$optionName, 'boolean'))->withDefault(true)], null];
+		yield [[(new Option(self::$optionName, 'boolean'))->withDefault(true)], false];
+		yield [[(new Option(self::$optionName, 'integer'))->withDefault(1)], null];
+		yield [[(new Option(self::$optionName, 'integer'))->withDefault(1)], 2];
+		yield [[(new Option(self::$optionName, 'number'))->withDefault(1)], null];
+		yield [[(new Option(self::$optionName, 'number'))->withDefault(1)], 2];
+		yield [[(new Option(self::$optionName, 'number'))->withDefault(1.2)], null];
+		yield [[(new Option(self::$optionName, 'number'))->withDefault(1.2)], 2.3];
+		yield [[(new Option(self::$optionName, 'array'))->withDefault(['foo'])], null];
+		yield [[(new Option(self::$optionName, 'array'))->withDefault(['foo'])], ['foo']];
+		yield [[(new Option(self::$optionName, 'array'))->withDefault(['foo' => 'bar'])], null];
+		yield [[(new Option(self::$optionName, 'array'))->withDefault(['foo' => 'bar'])], ['foo' => 'bar']];
 	}
 
 	/**
@@ -392,18 +391,18 @@ class OptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		get_option($this->optionName, $defaultPassed);
+		get_option(self::$optionName, $defaultPassed);
 	}
 
 	public function dataRegistryDefaultPassedStrictInvalid(): iterable
 	{
-		yield [[(new Option($this->optionName, 'string'))->withDefault('Hello World')], 123, 'Value must be of type string, integer given.'];
-		yield [[(new Option($this->optionName, 'boolean'))->withDefault(true)], '0', 'Value must be of type boolean, string given.'];
-		yield [[(new Option($this->optionName, 'integer'))->withDefault(1)], '2', 'Value must be of type integer, string given.'];
-		yield [[(new Option($this->optionName, 'integer'))->withDefault(1)], 1.2, 'Value must be of type integer, number (float) given.'];
-		yield [[(new Option($this->optionName, 'number'))->withDefault(1)], [], 'Value must be of type number, array given.'];
-		yield [[(new Option($this->optionName, 'array'))->withDefault([1])], 1, 'Value must be of type array, integer given.'];
-		yield [[(new Option($this->optionName, 'array'))->withDefault(['foo' => 'bar'])], 'foo->bar', 'Value must be of type array, string given.'];
+		yield [[(new Option(self::$optionName, 'string'))->withDefault('Hello World')], 123, 'Value must be of type string, integer given.'];
+		yield [[(new Option(self::$optionName, 'boolean'))->withDefault(true)], '0', 'Value must be of type boolean, string given.'];
+		yield [[(new Option(self::$optionName, 'integer'))->withDefault(1)], '2', 'Value must be of type integer, string given.'];
+		yield [[(new Option(self::$optionName, 'integer'))->withDefault(1)], 1.2, 'Value must be of type integer, number (float) given.'];
+		yield [[(new Option(self::$optionName, 'number'))->withDefault(1)], [], 'Value must be of type number, array given.'];
+		yield [[(new Option(self::$optionName, 'array'))->withDefault([1])], 1, 'Value must be of type array, integer given.'];
+		yield [[(new Option(self::$optionName, 'array'))->withDefault(['foo' => 'bar'])], 'foo->bar', 'Value must be of type array, string given.'];
 	}
 
 	/**
@@ -419,16 +418,16 @@ class OptionTest extends WPTestCase
 		$registry->hook($this->hook);
 		$registry->setPrefix('syntatis_');
 
-		$optionName = 'syntatis_' . $this->optionName;
+		$optionName = 'syntatis_' . self::$optionName;
 
-		$this->assertFalse(has_filter('default_option_syntatis_' . $this->optionName));
-		$this->assertFalse(has_filter('option_syntatis_' . $this->optionName));
+		$this->assertFalse(has_filter('default_option_syntatis_' . self::$optionName));
+		$this->assertFalse(has_filter('option_syntatis_' . self::$optionName));
 
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertTrue(has_filter('default_option_syntatis_' . $this->optionName));
-		$this->assertTrue(has_filter('option_syntatis_' . $this->optionName));
+		$this->assertTrue(has_filter('default_option_syntatis_' . self::$optionName));
+		$this->assertTrue(has_filter('option_syntatis_' . self::$optionName));
 
 		$this->assertTrue(add_option($optionName, $value));
 		$this->assertSame($value, get_option($optionName));
@@ -436,13 +435,13 @@ class OptionTest extends WPTestCase
 
 	public function dataRegistryPrefixSet(): iterable
 	{
-		yield [[new Option($this->optionName, 'string')], 'Hello World!'];
-		yield [[new Option($this->optionName, 'boolean')], true];
-		yield [[new Option($this->optionName, 'integer')], 1];
-		yield [[new Option($this->optionName, 'number')], 2];
-		yield [[new Option($this->optionName, 'number')], 1.2];
-		yield [[new Option($this->optionName, 'array')], ['foo']];
-		yield [[new Option($this->optionName, 'array')], ['foo' => 'bar']];
+		yield [[new Option(self::$optionName, 'string')], 'Hello World!'];
+		yield [[new Option(self::$optionName, 'boolean')], true];
+		yield [[new Option(self::$optionName, 'integer')], 1];
+		yield [[new Option(self::$optionName, 'number')], 2];
+		yield [[new Option(self::$optionName, 'number')], 1.2];
+		yield [[new Option(self::$optionName, 'array')], ['foo']];
+		yield [[new Option(self::$optionName, 'array')], ['foo' => 'bar']];
 	}
 
 	/**
@@ -459,17 +458,17 @@ class OptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_option` function.
 		 */
 		add_option(
-			$this->optionName,
+			self::$optionName,
 			(new InputSanitizer())->sanitize($value),
 		);
 
 		$registry = new Registry();
-		$registry->addOptions(...[new Option($this->optionName, 'string')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'string')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertSame($expect, get_option(self::$optionName));
 	}
 
 	/**
@@ -482,13 +481,13 @@ class OptionTest extends WPTestCase
 	public function testRegistryAddTypeString($value, $expect): void
 	{
 		$registry = new Registry();
-		$registry->addOptions(...[new Option($this->optionName, 'string')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'string')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertTrue(add_option($this->optionName, $value));
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertTrue(add_option(self::$optionName, $value));
+		$this->assertSame($expect, get_option(self::$optionName));
 	}
 
 	/**
@@ -505,16 +504,16 @@ class OptionTest extends WPTestCase
 		 * concerns about the value updated with the `update_option` function and
 		 * aone retrieved with the `get_option` function.
 		 */
-		add_option($this->optionName, (new InputSanitizer())->sanitize('Initial value!'));
+		add_option(self::$optionName, (new InputSanitizer())->sanitize('Initial value!'));
 
 		$registry = new Registry();
-		$registry->addOptions(...[new Option($this->optionName, 'string')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'string')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertTrue(update_option($this->optionName, $value));
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertTrue(update_option(self::$optionName, $value));
+		$this->assertSame($expect, get_option(self::$optionName));
 	}
 
 	/**
@@ -560,17 +559,17 @@ class OptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_option` function.
 		 */
 		add_option(
-			$this->optionName,
+			self::$optionName,
 			(new InputSanitizer())->sanitize($value),
 		);
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'string')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'string')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertSame($value, get_option($this->optionName));
+		$this->assertSame($value, get_option(self::$optionName));
 	}
 
 	/**
@@ -583,13 +582,13 @@ class OptionTest extends WPTestCase
 	public function testRegistryAddTypeStringStrictValid($value): void
 	{
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'string')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'string')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertTrue(add_option($this->optionName, $value));
-		$this->assertSame($value, get_option($this->optionName));
+		$this->assertTrue(add_option(self::$optionName, $value));
+		$this->assertSame($value, get_option(self::$optionName));
 	}
 
 	/**
@@ -607,18 +606,18 @@ class OptionTest extends WPTestCase
 		 * aone retrieved with the `get_option` function.
 		 */
 		add_option(
-			$this->optionName,
+			self::$optionName,
 			(new InputSanitizer())->sanitize('Initial value!'),
 		);
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'string')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'string')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertTrue(update_option($this->optionName, $value));
-		$this->assertSame($value, get_option($this->optionName));
+		$this->assertTrue(update_option(self::$optionName, $value));
+		$this->assertSame($value, get_option(self::$optionName));
 	}
 
 	public function dataRegistryTypeStringStrictValid(): iterable
@@ -644,12 +643,12 @@ class OptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_option` function.
 		 */
 		add_option(
-			$this->optionName,
+			self::$optionName,
 			(new InputSanitizer())->sanitize($value),
 		);
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'string')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'string')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
@@ -657,7 +656,7 @@ class OptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		get_option($this->optionName);
+		get_option(self::$optionName);
 	}
 
 	/**
@@ -671,7 +670,7 @@ class OptionTest extends WPTestCase
 	public function testRegistryAddTypeStringStrictInvalid($value, string $errorMessage): void
 	{
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'string')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'string')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
@@ -679,13 +678,13 @@ class OptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		add_option($this->optionName, $value);
+		add_option(self::$optionName, $value);
 	}
 
 	/**
 	 * @dataProvider dataRegistryTypeStringStrictInvalid
-	 * @group type-string
 	 * @group strict-mode
+	 * @group type-string
 	 *
 	 * @param mixed  $value        The value to add in the option.
 	 * @param string $errorMessage The expectd error message thrown with the `TypeError`.
@@ -697,20 +696,21 @@ class OptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_option` function.
 		 */
 		add_option(
-			$this->optionName,
+			self::$optionName,
 			(new InputSanitizer())->sanitize('Initial value!'),
 		);
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'string')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'string')]);
 		$registry->hook($this->hook);
 		$registry->register();
+
 		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		update_option($this->optionName, $value);
+		update_option(self::$optionName, $value);
 	}
 
 	public function dataRegistryTypeStringStrictInvalid(): iterable
@@ -737,17 +737,17 @@ class OptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_option` function.
 		 */
 		add_option(
-			$this->optionName,
+			self::$optionName,
 			(new InputSanitizer())->sanitize($value),
 		);
 
 		$registry = new Registry();
-		$registry->addOptions(...[new Option($this->optionName, 'boolean')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'boolean')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertSame($expect, get_option(self::$optionName));
 	}
 
 	/**
@@ -760,13 +760,13 @@ class OptionTest extends WPTestCase
 	public function testRegistryAddTypeBoolean($value, $expect): void
 	{
 		$registry = new Registry();
-		$registry->addOptions(...[new Option($this->optionName, 'boolean')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'boolean')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertTrue(add_option($this->optionName, $value));
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertTrue(add_option(self::$optionName, $value));
+		$this->assertSame($expect, get_option(self::$optionName));
 	}
 
 	/**
@@ -783,16 +783,16 @@ class OptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_option` function,
 		 * and updated with the `update_option` function.
 		 */
-		add_option($this->optionName, (new InputSanitizer())->sanitize(false));
+		add_option(self::$optionName, (new InputSanitizer())->sanitize(false));
 
 		$registry = new Registry();
-		$registry->addOptions(...[new Option($this->optionName, 'boolean')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'boolean')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertTrue(update_option($this->optionName, $value));
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertTrue(update_option(self::$optionName, $value));
+		$this->assertSame($expect, get_option(self::$optionName));
 	}
 
 	/**
@@ -839,17 +839,17 @@ class OptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_option` function.
 		 */
 		add_option(
-			$this->optionName,
+			self::$optionName,
 			(new InputSanitizer())->sanitize($value),
 		);
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'boolean')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'boolean')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertSame($value, get_option($this->optionName));
+		$this->assertSame($value, get_option(self::$optionName));
 	}
 
 	/**
@@ -862,13 +862,13 @@ class OptionTest extends WPTestCase
 	public function testRegistryAddTypeBooleanStrictValid($value): void
 	{
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'boolean')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'boolean')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertTrue(add_option($this->optionName, $value));
-		$this->assertSame($value, get_option($this->optionName));
+		$this->assertTrue(add_option(self::$optionName, $value));
+		$this->assertSame($value, get_option(self::$optionName));
 	}
 
 	/**
@@ -885,19 +885,19 @@ class OptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_option` function.
 		 */
 		add_option(
-			$this->optionName,
+			self::$optionName,
 			(new InputSanitizer())->sanitize(false),
 		);
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'boolean')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'boolean')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertFalse(get_option($this->optionName));
-		$this->assertTrue(update_option($this->optionName, $value));
-		$this->assertSame($value, get_option($this->optionName));
+		$this->assertFalse(get_option(self::$optionName));
+		$this->assertTrue(update_option(self::$optionName, $value));
+		$this->assertSame($value, get_option(self::$optionName));
 	}
 
 	public function dataRegistryTypeBooleanStrictValid(): iterable
@@ -921,12 +921,12 @@ class OptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_option` function.
 		 */
 		add_option(
-			$this->optionName,
+			self::$optionName,
 			(new InputSanitizer())->sanitize($value),
 		);
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'boolean')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'boolean')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
@@ -934,7 +934,7 @@ class OptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		get_option($this->optionName);
+		get_option(self::$optionName);
 	}
 
 	/**
@@ -948,7 +948,7 @@ class OptionTest extends WPTestCase
 	public function testRegistryAddTypeBooleanStrictInvalid($value, string $errorMessage): void
 	{
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'boolean')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'boolean')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
@@ -956,7 +956,7 @@ class OptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		add_option($this->optionName, $value);
+		add_option(self::$optionName, $value);
 	}
 
 	/**
@@ -975,12 +975,12 @@ class OptionTest extends WPTestCase
 		 * retrieved with the `get_option` function.
 		 */
 		add_option(
-			$this->optionName,
+			self::$optionName,
 			(new InputSanitizer())->sanitize(false),
 		);
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'boolean')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'boolean')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
@@ -988,7 +988,7 @@ class OptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		update_option($this->optionName, $value);
+		update_option(self::$optionName, $value);
 	}
 
 	public function dataRegistryTypeBooleanStrictInvalid(): iterable
@@ -1020,17 +1020,17 @@ class OptionTest extends WPTestCase
 		 * concerns about the value updated with the `update_option` function.
 		 */
 		add_option(
-			$this->optionName,
+			self::$optionName,
 			(new InputSanitizer())->sanitize($value),
 		);
 
 		$registry = new Registry();
-		$registry->addOptions(...[new Option($this->optionName, 'integer')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'integer')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertSame($expect, get_option(self::$optionName));
 	}
 
 	/**
@@ -1043,13 +1043,13 @@ class OptionTest extends WPTestCase
 	public function testRegistryAddTypeInteger($value, $expect): void
 	{
 		$registry = new Registry();
-		$registry->addOptions(...[new Option($this->optionName, 'integer')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'integer')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertTrue(add_option($this->optionName, $value));
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertTrue(add_option(self::$optionName, $value));
+		$this->assertSame($expect, get_option(self::$optionName));
 	}
 
 	/**
@@ -1067,18 +1067,18 @@ class OptionTest extends WPTestCase
 		 * retrieved with the `get_option` function.
 		 */
 		add_option(
-			$this->optionName,
+			self::$optionName,
 			(new InputSanitizer())->sanitize(0),
 		);
 
 		$registry = new Registry();
-		$registry->addOptions(...[new Option($this->optionName, 'integer')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'integer')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertTrue(update_option($this->optionName, $value));
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertTrue(update_option(self::$optionName, $value));
+		$this->assertSame($expect, get_option(self::$optionName));
 	}
 
 	/**
@@ -1130,17 +1130,17 @@ class OptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_option` function.
 		 */
 		add_option(
-			$this->optionName,
+			self::$optionName,
 			(new InputSanitizer())->sanitize($value),
 		);
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'integer')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'integer')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertSame($value, get_option($this->optionName));
+		$this->assertSame($value, get_option(self::$optionName));
 	}
 
 	/**
@@ -1153,13 +1153,13 @@ class OptionTest extends WPTestCase
 	public function testRegistryAddTypeIntegerStrictValid($value): void
 	{
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'integer')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'integer')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertTrue(add_option($this->optionName, $value));
-		$this->assertSame($value, get_option($this->optionName));
+		$this->assertTrue(add_option(self::$optionName, $value));
+		$this->assertSame($value, get_option(self::$optionName));
 	}
 
 	/**
@@ -1177,18 +1177,18 @@ class OptionTest extends WPTestCase
 		 * retrieved with the `get_option` function.
 		 */
 		add_option(
-			$this->optionName,
+			self::$optionName,
 			(new InputSanitizer())->sanitize(0),
 		);
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'integer')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'integer')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertTrue(update_option($this->optionName, $value));
-		$this->assertSame($value, get_option($this->optionName));
+		$this->assertTrue(update_option(self::$optionName, $value));
+		$this->assertSame($value, get_option(self::$optionName));
 	}
 
 	public function dataRegistryTypeIntegerStrictValid(): iterable
@@ -1217,12 +1217,12 @@ class OptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_option` function.
 		 */
 		add_option(
-			$this->optionName,
+			self::$optionName,
 			(new InputSanitizer())->sanitize($value),
 		);
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'integer')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'integer')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
@@ -1230,7 +1230,7 @@ class OptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		get_option($this->optionName);
+		get_option(self::$optionName);
 	}
 
 	/**
@@ -1244,7 +1244,7 @@ class OptionTest extends WPTestCase
 	public function testRegistryAddTypeIntegerStrictInvalid($value, string $errorMessage): void
 	{
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'integer')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'integer')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
@@ -1252,7 +1252,7 @@ class OptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		add_option($this->optionName, $value);
+		add_option(self::$optionName, $value);
 	}
 
 	/**
@@ -1271,12 +1271,12 @@ class OptionTest extends WPTestCase
 		 * updated with the `update_option` function.
 		 */
 		add_option(
-			$this->optionName,
+			self::$optionName,
 			(new InputSanitizer())->sanitize(0),
 		);
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'integer')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'integer')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
@@ -1284,7 +1284,7 @@ class OptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		update_option($this->optionName, $value);
+		update_option(self::$optionName, $value);
 	}
 
 	public function dataRegistryTypeIntegerStrictInvalid(): iterable
@@ -1311,15 +1311,15 @@ class OptionTest extends WPTestCase
 		 * Assumes that the option is already added with a value since the test only
 		 * concerns about the value retrieved with the `get_option` function.
 		 */
-		add_option($this->optionName, (new InputSanitizer())->sanitize($value));
+		add_option(self::$optionName, (new InputSanitizer())->sanitize($value));
 
 		$registry = new Registry();
-		$registry->addOptions(...[new Option($this->optionName, 'number')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'number')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertSame($expect, get_option(self::$optionName));
 	}
 
 	/**
@@ -1332,13 +1332,13 @@ class OptionTest extends WPTestCase
 	public function testRegistryAddTypeNumber($value, $expect): void
 	{
 		$registry = new Registry();
-		$registry->addOptions(...[new Option($this->optionName, 'number')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'number')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertTrue(add_option($this->optionName, $value));
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertTrue(add_option(self::$optionName, $value));
+		$this->assertSame($expect, get_option(self::$optionName));
 	}
 
 	/**
@@ -1355,16 +1355,16 @@ class OptionTest extends WPTestCase
 		 * concerns about the value updated with the `update_option` function, and
 		 * retrieved with the `get_option` function.
 		 */
-		add_option($this->optionName, (new InputSanitizer())->sanitize(0.0));
+		add_option(self::$optionName, (new InputSanitizer())->sanitize(0.0));
 
 		$registry = new Registry();
-		$registry->addOptions(...[new Option($this->optionName, 'number')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'number')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertTrue(update_option($this->optionName, $value));
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertTrue(update_option(self::$optionName, $value));
+		$this->assertSame($expect, get_option(self::$optionName));
 	}
 
 	/**
@@ -1408,17 +1408,17 @@ class OptionTest extends WPTestCase
 		 * updated with the `update_option` function.
 		 */
 		add_option(
-			$this->optionName,
+			self::$optionName,
 			(new InputSanitizer())->sanitize($value),
 		);
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'number')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'number')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertSame($value, get_option($this->optionName));
+		$this->assertSame($value, get_option(self::$optionName));
 	}
 
 	/**
@@ -1431,13 +1431,13 @@ class OptionTest extends WPTestCase
 	public function testRegistryAddTypeNumberStrictValid($value): void
 	{
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'number')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'number')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertTrue(add_option($this->optionName, $value));
-		$this->assertSame($value, get_option($this->optionName));
+		$this->assertTrue(add_option(self::$optionName, $value));
+		$this->assertSame($value, get_option(self::$optionName));
 	}
 
 	/**
@@ -1455,18 +1455,18 @@ class OptionTest extends WPTestCase
 		 * updated with the `update_option` function.
 		 */
 		add_option(
-			$this->optionName,
+			self::$optionName,
 			(new InputSanitizer())->sanitize(1.0),
 		);
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'number')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'number')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertTrue(update_option($this->optionName, $value));
-		$this->assertSame($value, get_option($this->optionName));
+		$this->assertTrue(update_option(self::$optionName, $value));
+		$this->assertSame($value, get_option(self::$optionName));
 	}
 
 	public function dataRegistryTypeNumberStrictValid(): iterable
@@ -1500,19 +1500,19 @@ class OptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_option` function.
 		 */
 		add_option(
-			$this->optionName,
+			self::$optionName,
 			(new InputSanitizer())->sanitize($value),
 		);
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'number')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'number')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 
-		get_option($this->optionName);
+		get_option(self::$optionName);
 	}
 
 	/**
@@ -1526,7 +1526,7 @@ class OptionTest extends WPTestCase
 	public function testRegistryAddTypeNumberStrictInvalid($value, string $errorMessage): void
 	{
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'number')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'number')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
@@ -1534,7 +1534,7 @@ class OptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		add_option($this->optionName, $value);
+		add_option(self::$optionName, $value);
 	}
 
 	/**
@@ -1553,12 +1553,12 @@ class OptionTest extends WPTestCase
 		 * updated with the `update_option` function.
 		 */
 		add_option(
-			$this->optionName,
+			self::$optionName,
 			(new InputSanitizer())->sanitize(0.0),
 		);
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'number')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'number')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
@@ -1566,7 +1566,7 @@ class OptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		update_option($this->optionName, $value);
+		update_option(self::$optionName, $value);
 	}
 
 	public function dataRegistryTypeNumberStrictInvalid(): iterable
@@ -1591,16 +1591,16 @@ class OptionTest extends WPTestCase
 		 * Assumes that the option is already added with a value since the test only
 		 * concerns about the value retrieved with the `get_option` function.
 		 */
-		add_option($this->optionName, (new InputSanitizer())->sanitize($value));
+		add_option(self::$optionName, (new InputSanitizer())->sanitize($value));
 
 		$registry = new Registry();
-		$registry->addOptions(...[new Option($this->optionName, 'array')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'array')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertSame($expect, get_option(self::$optionName));
 	}
 
 	/**
@@ -1613,14 +1613,14 @@ class OptionTest extends WPTestCase
 	public function testRegistryAddTypeArray($value, $expect): void
 	{
 		$registry = new Registry();
-		$registry->addOptions(...[new Option($this->optionName, 'array')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'array')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertTrue(add_option($this->optionName, $value));
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertTrue(add_option(self::$optionName, $value));
+		$this->assertSame($expect, get_option(self::$optionName));
 	}
 
 	/**
@@ -1637,17 +1637,17 @@ class OptionTest extends WPTestCase
 		 * concerns about the value updated with the `update_option` function, and
 		 * retrieved with the `get_option` function.
 		 */
-		add_option($this->optionName, (new InputSanitizer())->sanitize([]));
+		add_option(self::$optionName, (new InputSanitizer())->sanitize([]));
 
 		$registry = new Registry();
-		$registry->addOptions(...[new Option($this->optionName, 'array')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'array')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertTrue(update_option($this->optionName, $value));
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertTrue(update_option(self::$optionName, $value));
+		$this->assertSame($expect, get_option(self::$optionName));
 	}
 
 	/**
@@ -1682,17 +1682,17 @@ class OptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_option` function.
 		 */
 		add_option(
-			$this->optionName,
+			self::$optionName,
 			(new InputSanitizer())->sanitize($value),
 		);
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'array')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'array')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertSame($value, get_option($this->optionName));
+		$this->assertSame($value, get_option(self::$optionName));
 	}
 
 	/**
@@ -1705,13 +1705,13 @@ class OptionTest extends WPTestCase
 	public function testRegistryAddTypeArrayStrictValid($value): void
 	{
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'array')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'array')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertTrue(add_option($this->optionName, $value));
-		$this->assertSame($value, get_option($this->optionName));
+		$this->assertTrue(add_option(self::$optionName, $value));
+		$this->assertSame($value, get_option(self::$optionName));
 	}
 
 	/**
@@ -1729,18 +1729,18 @@ class OptionTest extends WPTestCase
 		 * updated with the `update_option` function.
 		 */
 		add_option(
-			$this->optionName,
+			self::$optionName,
 			(new InputSanitizer())->sanitize([]),
 		);
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'array')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'array')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertTrue(update_option($this->optionName, $value));
-		$this->assertSame($value, get_option($this->optionName));
+		$this->assertTrue(update_option(self::$optionName, $value));
+		$this->assertSame($value, get_option(self::$optionName));
 	}
 
 	public function dataRegistryTypeArrayStrictValid(): iterable
@@ -1765,12 +1765,12 @@ class OptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_option` function.
 		 */
 		add_option(
-			$this->optionName,
+			self::$optionName,
 			(new InputSanitizer())->sanitize($value),
 		);
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'array')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'array')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
@@ -1779,7 +1779,7 @@ class OptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		get_option($this->optionName);
+		get_option(self::$optionName);
 	}
 
 	/**
@@ -1792,7 +1792,7 @@ class OptionTest extends WPTestCase
 	public function testRegistryAddTypeArrayStrictInvalid($value, string $errorMessage): void
 	{
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'array')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'array')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->register();
@@ -1800,7 +1800,7 @@ class OptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		add_option($this->optionName, $value);
+		add_option(self::$optionName, $value);
 	}
 
 	/**
@@ -1819,12 +1819,12 @@ class OptionTest extends WPTestCase
 		 * updated with the `update_option` function.
 		 */
 		add_option(
-			$this->optionName,
+			self::$optionName,
 			(new InputSanitizer())->sanitize([]),
 		);
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new Option($this->optionName, 'array')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'array')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
@@ -1833,7 +1833,7 @@ class OptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		update_option($this->optionName, $value);
+		update_option(self::$optionName, $value);
 	}
 
 	public function dataRegistryTypeArrayStrictInvalid(): iterable
@@ -1849,7 +1849,6 @@ class OptionTest extends WPTestCase
 
 	/**
 	 * @dataProvider dataRegistryConstraints
-	 * @group strict-mode
 	 *
 	 * @param mixed $constraints  The constraints to be passed in the schema.
 	 * @param mixed $value        The value to add in the option.
@@ -1857,8 +1856,8 @@ class OptionTest extends WPTestCase
 	 */
 	public function testRegistryAddConstraints($constraints, $value, $errorMessage): void
 	{
-		$registry = new Registry(1);
-		$registry->addOptions(...[(new Option($this->optionName, 'string'))->withConstraints(...$constraints)]);
+		$registry = new Registry();
+		$registry->addOptions(...[(new Option(self::$optionName, 'string'))->withConstraints(...$constraints)]);
 		$registry->hook($this->hook);
 		$registry->register();
 
@@ -1867,25 +1866,30 @@ class OptionTest extends WPTestCase
 		$this->expectException(InvalidArgumentException::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		add_option($this->optionName, $value);
+		add_option(self::$optionName, $value);
 	}
 
 	/**
 	 * @dataProvider dataRegistryConstraints
+	 * @group strict-mode
 	 *
-	 * @param mixed $constraints The constraints to be passed in the schema.
-	 * @param mixed $value       The value to add in the option.
+	 * @param mixed $constraints  The constraints to be passed in the schema.
+	 * @param mixed $value        The value to add in the option.
+	 * @param mixed $errorMessage The expected error message.
 	 */
-	public function testRegistryAddConstraintsNonStrict($constraints, $value): void
+	public function testRegistryAddConstraintsStrict($constraints, $value, $errorMessage): void
 	{
-		$registry = new Registry();
-		$registry->addOptions(...[(new Option($this->optionName, 'string'))->withConstraints(...$constraints)]);
+		$registry = new Registry(1);
+		$registry->addOptions(...[(new Option(self::$optionName, 'string'))->withConstraints(...$constraints)]);
 		$registry->hook($this->hook);
 		$registry->register();
+
 		$this->hook->register();
 
-		$this->assertTrue(add_option($this->optionName, $value));
-		$this->assertSame($value, get_option($this->optionName));
+		$this->expectException(InvalidArgumentException::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		add_option(self::$optionName, $value);
 	}
 
 	/**
@@ -1903,12 +1907,12 @@ class OptionTest extends WPTestCase
 		 * concerns about the value updated with the `update_option` function.
 		 */
 		add_option(
-			$this->optionName,
+			self::$optionName,
 			(new InputSanitizer())->sanitize('email@example.org'),
 		);
 
-		$registry = new Registry(1);
-		$registry->addOptions(...[(new Option($this->optionName, 'string'))->withConstraints(...$constraints)]);
+		$registry = new Registry();
+		$registry->addOptions(...[(new Option(self::$optionName, 'string'))->withConstraints(...$constraints)]);
 		$registry->hook($this->hook);
 		$registry->register();
 
@@ -1917,7 +1921,7 @@ class OptionTest extends WPTestCase
 		$this->expectException(InvalidArgumentException::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		update_option($this->optionName, $value);
+		update_option(self::$optionName, $value);
 	}
 
 	/**
@@ -1933,20 +1937,20 @@ class OptionTest extends WPTestCase
 		 * concerns about the value updated with the `update_option` function.
 		 */
 		add_option(
-			$this->optionName,
+			self::$optionName,
 			(new InputSanitizer())->sanitize('email@example.org'),
 		);
 
 		$registry = new Registry();
-		$registry->addOptions(...[(new Option($this->optionName, 'string'))->withConstraints($constraints)]);
+		$registry->addOptions(...[(new Option(self::$optionName, 'string'))->withConstraints($constraints)]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertSame('email@example.org', get_option($this->optionName));
-		$this->assertTrue(update_option($this->optionName, $value));
-		$this->assertSame($value, get_option($this->optionName));
+		$this->assertSame('email@example.org', get_option(self::$optionName));
+		$this->assertTrue(update_option(self::$optionName, $value));
+		$this->assertSame($value, get_option(self::$optionName));
 	}
 
 	public function dataRegistryConstraints(): iterable
@@ -1957,38 +1961,47 @@ class OptionTest extends WPTestCase
 	}
 
 	/** @testdox it should not register the option as setting if it's not registered with a group. */
-	public function testRegistryNotRegisteredSettings(): void
+	public function testRegistryRegisterWithoutGroup(): void
 	{
 		$registry = new Registry();
-		$registry->addOptions(...[new Option($this->optionName, 'string')]);
+		$registry->addOptions(...[new Option(self::$optionName, 'string')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertArrayNotHasKey($this->optionName, get_registered_settings());
+		// do_action('admin_init');
+
+		$registeredSettings = get_registered_settings();
+
+		$this->assertArrayNotHasKey(self::$optionName, $registeredSettings);
 	}
 
 	/** @testdox it should register the option as setting with the args if it's registered with a group. */
-	public function testRegistryRegisteredSettings(): void
+	public function testRegistryRegisterWithGroup(): void
 	{
 		$registry = new Registry();
 		$registry->addOptions(...[
-			(new Option($this->optionName, 'string'))
+			(new Option(self::$optionName, 'string'))
 				->withDefault('Hello world!')
 				->withDescription('This is the description.'),
 		]);
 		$registry->hook($this->hook);
-		$registry->register($this->optionGroup);
+		$registry->register(self::$optionGroup);
 
 		$this->hook->register();
 
+		$userId = self::factory()->user->create(['role' => 'administrator']);
+		$user = wp_set_current_user($userId);
+
+		do_action('admin_init');
+
 		$registeredSettings = get_registered_settings();
 
-		$this->assertArrayHasKey($this->optionName, $registeredSettings);
-		$this->assertSame('string', $registeredSettings[$this->optionName]['type']);
-		$this->assertSame($this->optionGroup, $registeredSettings[$this->optionName]['group']);
-		$this->assertSame('Hello world!', $registeredSettings[$this->optionName]['default']);
+		$this->assertArrayHasKey(self::$optionName, $registeredSettings);
+		$this->assertSame('string', $registeredSettings[self::$optionName]['type']);
+		$this->assertSame(self::$optionGroup, $registeredSettings[self::$optionName]['group']);
+		$this->assertSame('Hello world!', $registeredSettings[self::$optionName]['default']);
 	}
 
 	/**
@@ -1998,7 +2011,8 @@ class OptionTest extends WPTestCase
 	public function testRegistryAPIEnabled(Registry $registry, array $schema): void
 	{
 		$registry->hook($this->hook);
-		$registry->register($this->optionGroup);
+		$registry->register(self::$optionGroup);
+
 		$this->hook->register();
 
 		do_action('rest_api_init');
@@ -2016,16 +2030,16 @@ class OptionTest extends WPTestCase
 		 *
 		 * @see https://developer.wordpress.org/reference/functions/register_setting/
 		 */
-		$this->assertSame($schema['default'], $properties[$this->optionName]['default']);
-		$this->assertSame($schema['description'], $properties[$this->optionName]['description']);
-		$this->assertSame($schema['type'], $properties[$this->optionName]['type']);
+		$this->assertSame($schema['default'], $properties[self::$optionName]['default']);
+		$this->assertSame($schema['description'], $properties[self::$optionName]['description']);
+		$this->assertSame($schema['type'], $properties[self::$optionName]['type']);
 	}
 
 	public function dataRegistryAPIEnabled(): iterable
 	{
 		$registry = new Registry();
 		$registry->addOptions(...[
-			(new Option($this->optionName, 'string'))
+			(new Option(self::$optionName, 'string'))
 				->withDefault('Hello world!')
 				->withDescription('This is the description.')
 				->apiEnabled(),
@@ -2042,7 +2056,7 @@ class OptionTest extends WPTestCase
 
 		$registry = new Registry();
 		$registry->addOptions(...[
-			(new Option($this->optionName, 'array'))
+			(new Option(self::$optionName, 'array'))
 				->withDefault(['#fff'])
 				->withDescription('This is the description.')
 				->apiEnabled([
@@ -2083,20 +2097,20 @@ class OptionTest extends WPTestCase
 
 		$registry = new Registry();
 		$registry->addOptions(...[
-			(new Option($this->optionName, 'string'))
+			(new Option(self::$optionName, 'string'))
 				->withDefault('Hello world!')
 				->withDescription('This is the description.')
 				->apiEnabled(),
 		]);
 		$registry->hook($this->hook);
 		$registry->setPrefix('wp_starter_plugin_');
-		$registry->register($this->optionGroup);
+		$registry->register(self::$optionGroup);
 
 		$this->hook->register();
 
 		do_action('rest_api_init');
 
-		$optionName = 'wp_starter_plugin_' . $this->optionName;
+		$optionName = 'wp_starter_plugin_' . self::$optionName;
 
 		$request = new WP_REST_Request('PUT', '/wp/v2/settings');
 		$request->set_body(wp_json_encode([$optionName => 'Hello Earth!']));
@@ -2119,19 +2133,19 @@ class OptionTest extends WPTestCase
 
 		$registry = new Registry(1);
 		$registry->addOptions(...[
-			(new Option($this->optionName, 'integer'))
+			(new Option(self::$optionName, 'integer'))
 				->withDefault(1)
 				->apiEnabled(),
 		]);
 		$registry->hook($this->hook);
 		$registry->setPrefix('wp_starter_plugin_');
-		$registry->register($this->optionGroup);
+		$registry->register(self::$optionGroup);
 
 		$this->hook->register();
 
 		do_action('rest_api_init');
 
-		$optionName = 'wp_starter_plugin_' . $this->optionName;
+		$optionName = 'wp_starter_plugin_' . self::$optionName;
 
 		$request = new WP_REST_Request('PUT', '/wp/v2/settings');
 		$request->set_body(wp_json_encode([$optionName => 'Hello Earth!']));

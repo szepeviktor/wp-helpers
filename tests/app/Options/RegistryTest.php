@@ -16,8 +16,6 @@ class RegistryTest extends WPTestCase
 {
 	private WPWPHookRegistry $hook;
 
-	private string $optionGroup = 'tests';
-
 	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 	public function set_up(): void
 	{
@@ -65,7 +63,10 @@ class RegistryTest extends WPTestCase
 		]);
 		$registry->hook($this->hook);
 		$registry->register('tests');
+
 		$this->hook->register();
+
+		// do_action('admin_init');
 
 		$registeredSettings = get_registered_settings();
 
@@ -97,6 +98,7 @@ class RegistryTest extends WPTestCase
 		]);
 		$registry->hook($this->hook);
 		$registry->register();
+
 		$this->hook->register();
 
 		$this->assertSame('Hello, World!', get_site_option('say'));
@@ -140,6 +142,7 @@ class RegistryTest extends WPTestCase
 		$registry->setPrefix('tests_');
 		$registry->hook($this->hook);
 		$registry->register();
+
 		$this->hook->register();
 
 		$this->assertSame(

@@ -73,6 +73,9 @@ class OptionRegistry implements Registrable, Hookable
 
 		$inputSanitizer = new InputSanitizer();
 		$outputResolver = new OutputResolver($optionType, $this->strict);
+		$inputValidator = new InputValidator($optionType, $this->strict);
+		$inputValidator->setConstraints($this->option->getConstraints());
+		$sanitizeCallback = static fn ($value) => $inputSanitizer->sanitize($value);
 
 		$this->hook->addFilter(
 			'default_option_' . $this->optionName,
@@ -89,44 +92,47 @@ class OptionRegistry implements Registrable, Hookable
 			$optionPriority,
 		);
 
-		$sanitizeCallback = static fn ($value) => $inputSanitizer->sanitize($value);
-
-		if ($this->settingGroup) {
-			register_setting(
-				$this->settingGroup,
-				$this->optionName,
-				array_merge(
-					$this->option->getSettingArgs(),
-					['sanitize_callback' => $sanitizeCallback],
-				),
-			);
-		} else {
-			$this->hook->addFilter(
-				'sanitize_option_' . $this->optionName,
-				$sanitizeCallback,
-				$optionPriority,
-			);
-		}
-
-		if ($this->strict !== 1) {
-			return;
-		}
-
-		$inputValidator = new InputValidator($optionType, $this->option->getConstraints());
+		$this->hook->addFilter(
+			'sanitize_option_' . $this->optionName,
+			$sanitizeCallback,
+			$optionPriority,
+		);
 
 		$this->hook->addAction(
-			'add_option',
+			'add_option_' . $this->optionName,
 			static fn ($name, $value) => $inputValidator->validate($value),
 			$optionPriority,
 			2,
 		);
 
 		$this->hook->addAction(
-			'update_option',
-			static fn ($name, $oldValue, $newValue) => $inputValidator->validate($newValue),
+			'update_option_' . $this->optionName,
+			static fn ($oldValue, $newValue) => $inputValidator->validate($newValue),
 			$optionPriority,
-			3,
+			2,
 		);
+
+		if (! $this->settingGroup) {
+			return;
+		}
+
+		$settingArgs = $this->option->getSettingArgs();
+		$registerSetting = fn () => register_setting(
+			$this->settingGroup,
+			$this->optionName,
+			array_merge(
+				$settingArgs,
+				['sanitize_callback' => $sanitizeCallback],
+			),
+		);
+
+		$this->hook->addAction('admin_init', $registerSetting);
+
+		if (! ($settingArgs['show_in_rest'] ?? false)) {
+			return;
+		}
+
+		$this->hook->addAction('rest_api_init', $registerSetting);
 	}
 
 	public function deregister(): void

@@ -29,17 +29,24 @@ class InputValidator
 	/** @phpstan-var ValueType */
 	private string $type;
 
-	/** @phpstan-var array<Constraints> */
-	private array $constraints;
+	private int $strict;
 
-	/**
-	 * @phpstan-param ValueType $type
-	 * @phpstan-param array<Constraints> $constraints
-	 */
-	public function __construct(string $type, array $constraints = [])
+	/** @phpstan-var array<Constraints> */
+	private array $constraints = [];
+
+	/** @phpstan-param ValueType $type */
+	public function __construct(string $type, int $strict = 0)
 	{
 		$this->type = $type;
+		$this->strict = $strict;
+	}
+
+	/** @phpstan-param array<Constraints> $constraints */
+	public function setConstraints(array $constraints): self
+	{
 		$this->constraints = $constraints;
+
+		return $this;
 	}
 
 	/** @param mixed $value */
@@ -48,6 +55,12 @@ class InputValidator
 		$value = is_array($value) && array_key_exists('__syntatis', $value) ? $value['__syntatis'] : $value;
 
 		if ($value === null) {
+			return;
+		}
+
+		$this->validateWithConstraints($value);
+
+		if (! $this->strict) {
 			return;
 		}
 
@@ -61,8 +74,6 @@ class InputValidator
 		if ($matchedType === null) {
 			throw new PHPTypeError('Unable to validate of type ' . $this->type . '.');
 		}
-
-		$this->validateWithConstraints($value);
 	}
 
 	/** @param mixed $value */
@@ -92,7 +103,7 @@ class InputValidator
 	/** @param mixed $value */
 	private function validateWithConstraints($value): void
 	{
-		if (! is_array($this->constraints)) {
+		if (! is_array($this->constraints) || $this->constraints === []) {
 			return;
 		}
 

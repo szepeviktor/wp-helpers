@@ -18,7 +18,7 @@ class NetworkOptionTest extends WPTestCase
 {
 	private WPWPHookRegistry $hook;
 
-	private string $optionName = 'foo_bar';
+	private static string $optionName = 'foo_bar';
 
 	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 	public function set_up(): void
@@ -31,7 +31,7 @@ class NetworkOptionTest extends WPTestCase
 	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 	public function tear_down(): void
 	{
-		delete_site_option($this->optionName);
+		delete_site_option(self::$optionName);
 
 		parent::tear_down();
 	}
@@ -39,9 +39,9 @@ class NetworkOptionTest extends WPTestCase
 	/** @testdox should return the name */
 	public function testName(): void
 	{
-		$option = new NetworkOption($this->optionName, 'string');
+		$option = new NetworkOption(self::$optionName, 'string');
 
-		$this->assertEquals($this->optionName, $option->getName());
+		$this->assertEquals(self::$optionName, $option->getName());
 	}
 
 	/** @testdox should throw error when name is blank */
@@ -54,12 +54,12 @@ class NetworkOptionTest extends WPTestCase
 	/** @testdox should set and return the constraints */
 	public function testConstraints(): void
 	{
-		$option = new NetworkOption($this->optionName, 'string');
+		$option = new NetworkOption(self::$optionName, 'string');
 		$option = $option->withConstraints('is_string');
 
 		$this->assertEquals(['is_string'], $option->getConstraints());
 
-		$option = new NetworkOption($this->optionName, 'string');
+		$option = new NetworkOption(self::$optionName, 'string');
 		$option = $option->withConstraints('is_string', 'is_numeric');
 
 		$this->assertEquals(
@@ -71,7 +71,7 @@ class NetworkOptionTest extends WPTestCase
 	/** @testdox should set and return the priority */
 	public function testPriority(): void
 	{
-		$option = new NetworkOption($this->optionName, 'string');
+		$option = new NetworkOption(self::$optionName, 'string');
 
 		$this->assertSame(99, $option->getPriority());
 
@@ -83,7 +83,7 @@ class NetworkOptionTest extends WPTestCase
 	/** @testdox should set and return the default value set */
 	public function testSettingArgsDefault(): void
 	{
-		$option = (new NetworkOption($this->optionName, 'string'))
+		$option = (new NetworkOption(self::$optionName, 'string'))
 			->withDefault('bar');
 
 		$this->assertEquals(
@@ -98,7 +98,7 @@ class NetworkOptionTest extends WPTestCase
 	/** @testdox should set and return the description */
 	public function testSettingArgsDescription(): void
 	{
-		$option = (new NetworkOption($this->optionName, 'string'))->withDescription('This is the description');
+		$option = (new NetworkOption(self::$optionName, 'string'))->withDescription('This is the description');
 
 		$this->assertEquals(
 			[
@@ -120,16 +120,16 @@ class NetworkOptionTest extends WPTestCase
 
 		$this->hook->register();
 
-		$this->assertNull(get_site_option($this->optionName));
+		$this->assertNull(get_site_option(self::$optionName));
 	}
 
 	public function dataNoDefaultSet(): iterable
 	{
-		yield [[new NetworkOption($this->optionName, 'string')]];
-		yield [[new NetworkOption($this->optionName, 'boolean')]];
-		yield [[new NetworkOption($this->optionName, 'integer')]];
-		yield [[new NetworkOption($this->optionName, 'number')]];
-		yield [[new NetworkOption($this->optionName, 'array')]];
+		yield [[new NetworkOption(self::$optionName, 'string')]];
+		yield [[new NetworkOption(self::$optionName, 'boolean')]];
+		yield [[new NetworkOption(self::$optionName, 'integer')]];
+		yield [[new NetworkOption(self::$optionName, 'number')]];
+		yield [[new NetworkOption(self::$optionName, 'array')]];
 	}
 
 	/**
@@ -146,7 +146,7 @@ class NetworkOptionTest extends WPTestCase
 
 		$this->hook->register();
 
-		$this->assertSame($defaultReturned, get_site_option($this->optionName));
+		$this->assertSame($defaultReturned, get_site_option(self::$optionName));
 	}
 
 	/**
@@ -154,13 +154,13 @@ class NetworkOptionTest extends WPTestCase
 	 */
 	public function dataDefaultSet(): iterable
 	{
-		yield [[(new NetworkOption($this->optionName, 'string'))->withDefault(123)], '123'];
-		yield [[(new NetworkOption($this->optionName, 'boolean'))->withDefault(1)], true];
-		yield [[(new NetworkOption($this->optionName, 'boolean'))->withDefault('')], false];
-		yield [[(new NetworkOption($this->optionName, 'integer'))->withDefault('123')], 123];
-		yield [[(new NetworkOption($this->optionName, 'number'))->withDefault('123')], 123];
-		yield [[(new NetworkOption($this->optionName, 'number'))->withDefault('1.23')], 1.23];
-		yield [[(new NetworkOption($this->optionName, 'array'))->withDefault('foo')], ['foo']];
+		yield [[(new NetworkOption(self::$optionName, 'string'))->withDefault(123)], '123'];
+		yield [[(new NetworkOption(self::$optionName, 'boolean'))->withDefault(1)], true];
+		yield [[(new NetworkOption(self::$optionName, 'boolean'))->withDefault('')], false];
+		yield [[(new NetworkOption(self::$optionName, 'integer'))->withDefault('123')], 123];
+		yield [[(new NetworkOption(self::$optionName, 'number'))->withDefault('123')], 123];
+		yield [[(new NetworkOption(self::$optionName, 'number'))->withDefault('1.23')], 1.23];
+		yield [[(new NetworkOption(self::$optionName, 'array'))->withDefault('foo')], ['foo']];
 	}
 
 	/**
@@ -177,19 +177,19 @@ class NetworkOptionTest extends WPTestCase
 
 		$this->hook->register();
 
-		$this->assertSame($default, get_site_option($this->optionName));
+		$this->assertSame($default, get_site_option(self::$optionName));
 	}
 
 	public function dataDefaultSetStrictValid(): iterable
 	{
-		yield [[(new NetworkOption($this->optionName, 'string'))->withDefault('Hello world!')], 'Hello world!'];
-		yield [[(new NetworkOption($this->optionName, 'boolean'))->withDefault(true)], true];
-		yield [[(new NetworkOption($this->optionName, 'boolean'))->withDefault(false)], false];
-		yield [[(new NetworkOption($this->optionName, 'integer'))->withDefault(123)], 123];
-		yield [[(new NetworkOption($this->optionName, 'number'))->withDefault(1.23)], 1.23];
-		yield [[(new NetworkOption($this->optionName, 'number'))->withDefault(123)], 123];
-		yield [[(new NetworkOption($this->optionName, 'array'))->withDefault(['foo', 'bar'])], ['foo', 'bar']];
-		yield [[(new NetworkOption($this->optionName, 'array'))->withDefault(['foo' => 1, 'bar' => 2])], ['foo' => 1, 'bar' => 2]];
+		yield [[(new NetworkOption(self::$optionName, 'string'))->withDefault('Hello world!')], 'Hello world!'];
+		yield [[(new NetworkOption(self::$optionName, 'boolean'))->withDefault(true)], true];
+		yield [[(new NetworkOption(self::$optionName, 'boolean'))->withDefault(false)], false];
+		yield [[(new NetworkOption(self::$optionName, 'integer'))->withDefault(123)], 123];
+		yield [[(new NetworkOption(self::$optionName, 'number'))->withDefault(1.23)], 1.23];
+		yield [[(new NetworkOption(self::$optionName, 'number'))->withDefault(123)], 123];
+		yield [[(new NetworkOption(self::$optionName, 'array'))->withDefault(['foo', 'bar'])], ['foo', 'bar']];
+		yield [[(new NetworkOption(self::$optionName, 'array'))->withDefault(['foo' => 1, 'bar' => 2])], ['foo' => 1, 'bar' => 2]];
 	}
 
 	/**
@@ -209,16 +209,16 @@ class NetworkOptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		get_site_option($this->optionName);
+		get_site_option(self::$optionName);
 	}
 
 	public function dataDefaultSetStrictInvalid(): iterable
 	{
-		yield [[(new NetworkOption($this->optionName, 'string'))->withDefault(123)], 'Value must be of type string, integer given.'];
-		yield [[(new NetworkOption($this->optionName, 'boolean'))->withDefault('true')], 'Value must be of type boolean, string given.'];
-		yield [[(new NetworkOption($this->optionName, 'integer'))->withDefault(1.23)], 'Value must be of type integer, number (float) given.'];
-		yield [[(new NetworkOption($this->optionName, 'number'))->withDefault([])], 'Value must be of type number, array given.'];
-		yield [[(new NetworkOption($this->optionName, 'array'))->withDefault(true)], 'Value must be of type array, boolean given.'];
+		yield [[(new NetworkOption(self::$optionName, 'string'))->withDefault(123)], 'Value must be of type string, integer given.'];
+		yield [[(new NetworkOption(self::$optionName, 'boolean'))->withDefault('true')], 'Value must be of type boolean, string given.'];
+		yield [[(new NetworkOption(self::$optionName, 'integer'))->withDefault(1.23)], 'Value must be of type integer, number (float) given.'];
+		yield [[(new NetworkOption(self::$optionName, 'number'))->withDefault([])], 'Value must be of type number, array given.'];
+		yield [[(new NetworkOption(self::$optionName, 'array'))->withDefault(true)], 'Value must be of type array, boolean given.'];
 	}
 
 	/**
@@ -237,8 +237,8 @@ class NetworkOptionTest extends WPTestCase
 
 		$this->hook->register();
 
-		$this->assertSame($default, get_site_option($this->optionName));
-		$this->assertSame($defaultPassedReturned, get_site_option($this->optionName, $defaultPassed));
+		$this->assertSame($default, get_site_option(self::$optionName));
+		$this->assertSame($defaultPassedReturned, get_site_option(self::$optionName, $defaultPassed));
 	}
 
 	/**
@@ -246,13 +246,13 @@ class NetworkOptionTest extends WPTestCase
 	 */
 	public function dataDefaultPassed(): iterable
 	{
-		yield [[(new NetworkOption($this->optionName, 'string'))->withDefault('Hello World')], 'Hello World', 123, '123'];
-		yield [[(new NetworkOption($this->optionName, 'boolean'))->withDefault(false)], false, 'true', true];
-		yield [[(new NetworkOption($this->optionName, 'boolean'))->withDefault(true)], true, '', false];
-		yield [[(new NetworkOption($this->optionName, 'integer'))->withDefault(1)], 1, '2', 2];
-		yield [[(new NetworkOption($this->optionName, 'number'))->withDefault(1.2)], 1.2, [], null];
-		yield [[(new NetworkOption($this->optionName, 'number'))->withDefault(1.2)], 1.2, '2.3', 2.3];
-		yield [[(new NetworkOption($this->optionName, 'array'))->withDefault(['foo'])], ['foo'], 'bar', ['bar']];
+		yield [[(new NetworkOption(self::$optionName, 'string'))->withDefault('Hello World')], 'Hello World', 123, '123'];
+		yield [[(new NetworkOption(self::$optionName, 'boolean'))->withDefault(false)], false, 'true', true];
+		yield [[(new NetworkOption(self::$optionName, 'boolean'))->withDefault(true)], true, '', false];
+		yield [[(new NetworkOption(self::$optionName, 'integer'))->withDefault(1)], 1, '2', 2];
+		yield [[(new NetworkOption(self::$optionName, 'number'))->withDefault(1.2)], 1.2, [], null];
+		yield [[(new NetworkOption(self::$optionName, 'number'))->withDefault(1.2)], 1.2, '2.3', 2.3];
+		yield [[(new NetworkOption(self::$optionName, 'array'))->withDefault(['foo'])], ['foo'], 'bar', ['bar']];
 	}
 
 	/**
@@ -270,18 +270,18 @@ class NetworkOptionTest extends WPTestCase
 
 		$this->hook->register();
 
-		$this->assertSame($default, get_site_option($this->optionName));
-		$this->assertSame($defaultPassed, get_site_option($this->optionName, $defaultPassed));
+		$this->assertSame($default, get_site_option(self::$optionName));
+		$this->assertSame($defaultPassed, get_site_option(self::$optionName, $defaultPassed));
 	}
 
 	public function dataDefaultPassedStrictValid(): iterable
 	{
-		yield [[(new NetworkOption($this->optionName, 'string'))->withDefault('Hello World')], 'Hello World', '123'];
-		yield [[(new NetworkOption($this->optionName, 'string'))->withDefault('')], '', null];
-		yield [[(new NetworkOption($this->optionName, 'boolean'))->withDefault(false)], false, true];
-		yield [[(new NetworkOption($this->optionName, 'integer'))->withDefault(1)], 1, 2];
-		yield [[(new NetworkOption($this->optionName, 'number'))->withDefault(1.2)], 1.2, 2.5];
-		yield [[(new NetworkOption($this->optionName, 'array'))->withDefault(['foo'])], ['foo'], ['bar']];
+		yield [[(new NetworkOption(self::$optionName, 'string'))->withDefault('Hello World')], 'Hello World', '123'];
+		yield [[(new NetworkOption(self::$optionName, 'string'))->withDefault('')], '', null];
+		yield [[(new NetworkOption(self::$optionName, 'boolean'))->withDefault(false)], false, true];
+		yield [[(new NetworkOption(self::$optionName, 'integer'))->withDefault(1)], 1, 2];
+		yield [[(new NetworkOption(self::$optionName, 'number'))->withDefault(1.2)], 1.2, 2.5];
+		yield [[(new NetworkOption(self::$optionName, 'array'))->withDefault(['foo'])], ['foo'], ['bar']];
 
 		/**
 		 * Passing `false` as the default value currently would not work as expected.
@@ -294,7 +294,7 @@ class NetworkOptionTest extends WPTestCase
 		 *
 		 * @see https://github.com/WordPress/wordpress-develop/blob/7444885eb3a0df1b3c30bc59891819c2cf885009/src/wp-includes/option.php#L1821-L1841
 		 */
-		// yield [[(new NetworkOption($this->optionName, 'boolean'))->withDefault(true)], true, false];
+		// yield [[(new NetworkOption(self::$optionName, 'boolean'))->withDefault(true)], true, false];
 	}
 
 	/**
@@ -313,19 +313,19 @@ class NetworkOptionTest extends WPTestCase
 
 		$this->hook->register();
 
-		$this->assertSame($default, get_site_option($this->optionName));
+		$this->assertSame($default, get_site_option(self::$optionName));
 		$this->expectException(TypeError::class);
 
-		get_site_option($this->optionName, $defaultPassed);
+		get_site_option(self::$optionName, $defaultPassed);
 	}
 
 	public function dataDefaultPassedStrictInvalid(): iterable
 	{
-		yield [[(new NetworkOption($this->optionName, 'string'))->withDefault('Hello World')], 'Hello World', 123, 'Value must be of type string, integer given.'];
-		yield [[(new NetworkOption($this->optionName, 'boolean'))->withDefault(true)], true, 0, 'Value must be of type boolean, integer given.'];
-		yield [[(new NetworkOption($this->optionName, 'integer'))->withDefault(1)], 1, 2.3, 'Value must be of type integer, number (float) given.'];
-		yield [[(new NetworkOption($this->optionName, 'number'))->withDefault(1.2)], 1.2, 'foo', 'Value must be of type number, string given.'];
-		yield [[(new NetworkOption($this->optionName, 'array'))->withDefault(['foo'])], ['foo'], true, 'Value must be of type array, string given.'];
+		yield [[(new NetworkOption(self::$optionName, 'string'))->withDefault('Hello World')], 'Hello World', 123, 'Value must be of type string, integer given.'];
+		yield [[(new NetworkOption(self::$optionName, 'boolean'))->withDefault(true)], true, 0, 'Value must be of type boolean, integer given.'];
+		yield [[(new NetworkOption(self::$optionName, 'integer'))->withDefault(1)], 1, 2.3, 'Value must be of type integer, number (float) given.'];
+		yield [[(new NetworkOption(self::$optionName, 'number'))->withDefault(1.2)], 1.2, 'foo', 'Value must be of type number, string given.'];
+		yield [[(new NetworkOption(self::$optionName, 'array'))->withDefault(['foo'])], ['foo'], true, 'Value must be of type array, string given.'];
 	}
 
 	/**
@@ -341,23 +341,23 @@ class NetworkOptionTest extends WPTestCase
 		$registry->hook($this->hook);
 		$registry->setPrefix('syntatis_');
 
-		$this->assertFalse(has_filter('default_site_option_syntatis_' . $this->optionName));
-		$this->assertFalse(has_filter('site_option_syntatis_' . $this->optionName));
+		$this->assertFalse(has_filter('default_site_option_syntatis_' . self::$optionName));
+		$this->assertFalse(has_filter('site_option_syntatis_' . self::$optionName));
 
 		$registry->register();
 		$this->hook->register();
 
-		$this->assertTrue(has_filter('default_site_option_syntatis_' . $this->optionName));
-		$this->assertTrue(has_filter('site_option_syntatis_' . $this->optionName));
+		$this->assertTrue(has_filter('default_site_option_syntatis_' . self::$optionName));
+		$this->assertTrue(has_filter('site_option_syntatis_' . self::$optionName));
 
-		$this->assertTrue(add_site_option('syntatis_' . $this->optionName, $value));
-		$this->assertSame($value, get_site_option('syntatis_' . $this->optionName));
+		$this->assertTrue(add_site_option('syntatis_' . self::$optionName, $value));
+		$this->assertSame($value, get_site_option('syntatis_' . self::$optionName));
 	}
 
 	public function dataPrefixSet(): iterable
 	{
-		yield [[(new NetworkOption($this->optionName, 'string'))->withDefault('Hello World')], 'Hello Earth!'];
-		yield [[(new NetworkOption($this->optionName, 'array'))->withDefault([])], ['foo']];
+		yield [[(new NetworkOption(self::$optionName, 'string'))->withDefault('Hello World')], 'Hello Earth!'];
+		yield [[(new NetworkOption(self::$optionName, 'array'))->withDefault([])], ['foo']];
 	}
 
 	/**
@@ -373,16 +373,16 @@ class NetworkOptionTest extends WPTestCase
 		 * Assumes that the option is already added with a value since the test only
 		 * concerns about the value retrieved with the `get_site_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize($value));
 
 		$registry = new Registry();
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'string')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'string')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertSame($expect, get_site_option($this->optionName));
+		$this->assertSame($expect, get_site_option(self::$optionName));
 	}
 
 	/**
@@ -395,14 +395,14 @@ class NetworkOptionTest extends WPTestCase
 	public function testAddTypeString($value, $expect): void
 	{
 		$registry = new Registry();
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'string')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'string')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertTrue(add_site_option($this->optionName, $value));
-		$this->assertSame($expect, get_site_option($this->optionName));
+		$this->assertTrue(add_site_option(self::$optionName, $value));
+		$this->assertSame($expect, get_site_option(self::$optionName));
 	}
 
 	/**
@@ -419,17 +419,17 @@ class NetworkOptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_site_option` function,
 		 * and the `update_site_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize('Initial value!'));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize('Initial value!'));
 
 		$registry = new Registry();
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'string')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'string')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertTrue(update_site_option($this->optionName, $value));
-		$this->assertSame($expect, get_site_option($this->optionName));
+		$this->assertTrue(update_site_option(self::$optionName, $value));
+		$this->assertSame($expect, get_site_option(self::$optionName));
 	}
 
 	/**
@@ -470,16 +470,16 @@ class NetworkOptionTest extends WPTestCase
 	 */
 	public function testGetTypeStringStrictValid($value): void
 	{
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize($value));
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'string')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'string')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertSame($value, get_site_option($this->optionName));
+		$this->assertSame($value, get_site_option(self::$optionName));
 	}
 
 	/**
@@ -493,14 +493,14 @@ class NetworkOptionTest extends WPTestCase
 	public function testAddTypeStringStrictValid($value, $expect): void
 	{
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'string')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'string')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertTrue(add_site_option($this->optionName, $value));
-		$this->assertSame($expect, get_site_option($this->optionName));
+		$this->assertTrue(add_site_option(self::$optionName, $value));
+		$this->assertSame($expect, get_site_option(self::$optionName));
 	}
 
 	/**
@@ -518,17 +518,17 @@ class NetworkOptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_site_option` function,
 		 * and `update_site_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize('Initial value!'));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize('Initial value!'));
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'string')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'string')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertTrue(update_site_option($this->optionName, $value));
-		$this->assertSame($value, get_site_option($this->optionName));
+		$this->assertTrue(update_site_option(self::$optionName, $value));
+		$this->assertSame($value, get_site_option(self::$optionName));
 	}
 
 	public function dataTypeStringStrictValid(): iterable
@@ -552,10 +552,10 @@ class NetworkOptionTest extends WPTestCase
 		 * Assumes that the option is already added with a value since the test only
 		 * concerns about the value retrieved with the `get_site_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize($value));
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'string')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'string')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
@@ -564,7 +564,7 @@ class NetworkOptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		get_site_option($this->optionName);
+		get_site_option(self::$optionName);
 	}
 
 	/**
@@ -577,7 +577,7 @@ class NetworkOptionTest extends WPTestCase
 	public function testAddTypeStringStrictInvalid($value, string $errorMessage): void
 	{
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'string')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'string')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
@@ -586,7 +586,7 @@ class NetworkOptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		add_site_option($this->optionName, $value);
+		add_site_option(self::$optionName, $value);
 	}
 
 	/**
@@ -603,10 +603,10 @@ class NetworkOptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_site_option` function,
 		 * and the `update_site_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize('Initial value!'));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize('Initial value!'));
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'string')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'string')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
@@ -615,7 +615,7 @@ class NetworkOptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		update_site_option($this->optionName, $value);
+		update_site_option(self::$optionName, $value);
 	}
 
 	public function dataTypeStringStrictInvalid(): iterable
@@ -636,16 +636,16 @@ class NetworkOptionTest extends WPTestCase
 	 */
 	public function testGetTypeBoolean($value, $expect): void
 	{
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize($value));
 
 		$registry = new Registry();
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'boolean')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'boolean')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertSame($expect, get_site_option($this->optionName));
+		$this->assertSame($expect, get_site_option(self::$optionName));
 	}
 
 	/**
@@ -658,14 +658,14 @@ class NetworkOptionTest extends WPTestCase
 	public function testAddTypeBoolean($value, $expect): void
 	{
 		$registry = new Registry();
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'boolean')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'boolean')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertTrue(add_site_option($this->optionName, $value));
-		$this->assertSame($expect, get_site_option($this->optionName));
+		$this->assertTrue(add_site_option(self::$optionName, $value));
+		$this->assertSame($expect, get_site_option(self::$optionName));
 	}
 
 	/**
@@ -682,17 +682,17 @@ class NetworkOptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_site_option` function,
 		 * and the `update_site_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize(false));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize(false));
 
 		$registry = new Registry();
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'boolean')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'boolean')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertTrue(update_site_option($this->optionName, $value));
-		$this->assertSame($expect, get_site_option($this->optionName));
+		$this->assertTrue(update_site_option(self::$optionName, $value));
+		$this->assertSame($expect, get_site_option(self::$optionName));
 	}
 
 	/**
@@ -735,16 +735,16 @@ class NetworkOptionTest extends WPTestCase
 		 * Assumes that the option is already added with a value since the test only
 		 * concerns about the value retrieved with the `get_site_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize($value));
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'boolean')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'boolean')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertSame($value, get_site_option($this->optionName));
+		$this->assertSame($value, get_site_option(self::$optionName));
 	}
 
 	/**
@@ -757,14 +757,14 @@ class NetworkOptionTest extends WPTestCase
 	public function testAddTypeBooleanStrictValid($value): void
 	{
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'boolean')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'boolean')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertTrue(add_site_option($this->optionName, $value));
-		$this->assertSame($value, get_site_option($this->optionName));
+		$this->assertTrue(add_site_option(self::$optionName, $value));
+		$this->assertSame($value, get_site_option(self::$optionName));
 	}
 
 	/**
@@ -781,18 +781,18 @@ class NetworkOptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_site_option` function,
 		 * and `update_site_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize(false));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize(false));
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'boolean')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'boolean')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		update_site_option($this->optionName, $value);
+		update_site_option(self::$optionName, $value);
 
-		$this->assertSame($value, get_site_option($this->optionName));
+		$this->assertSame($value, get_site_option(self::$optionName));
 	}
 
 	public function dataTypeBooleanStrictValid(): iterable
@@ -816,10 +816,10 @@ class NetworkOptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_site_option` function,
 		 * and `update_site_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize($value));
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'boolean')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'boolean')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
@@ -828,7 +828,7 @@ class NetworkOptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		get_site_option($this->optionName);
+		get_site_option(self::$optionName);
 	}
 
 	/**
@@ -841,7 +841,7 @@ class NetworkOptionTest extends WPTestCase
 	public function testAddTypeBooleanStrictInvalid($value, string $errorMessage): void
 	{
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'boolean')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'boolean')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
@@ -850,7 +850,7 @@ class NetworkOptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		add_site_option($this->optionName, $value);
+		add_site_option(self::$optionName, $value);
 	}
 
 	/**
@@ -867,10 +867,10 @@ class NetworkOptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_site_option` function,
 		 * and `update_site_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize(false));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize(false));
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'boolean')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'boolean')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
@@ -879,7 +879,7 @@ class NetworkOptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		update_site_option($this->optionName, $value);
+		update_site_option(self::$optionName, $value);
 	}
 
 	public function dataTypeBooleanStrictInvalid(): iterable
@@ -910,16 +910,16 @@ class NetworkOptionTest extends WPTestCase
 		 * Assumes that the option is already added with a value since the test only
 		 * concerns about the value retrieved with the `get_site_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize($value));
 
 		$registry = new Registry();
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'integer')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'integer')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertSame($expect, get_site_option($this->optionName));
+		$this->assertSame($expect, get_site_option(self::$optionName));
 	}
 
 	/**
@@ -932,14 +932,14 @@ class NetworkOptionTest extends WPTestCase
 	public function testAddTypeInteger($value, $expect): void
 	{
 		$registry = new Registry();
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'integer')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'integer')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertTrue(add_site_option($this->optionName, $value));
-		$this->assertSame($expect, get_site_option($this->optionName));
+		$this->assertTrue(add_site_option(self::$optionName, $value));
+		$this->assertSame($expect, get_site_option(self::$optionName));
 	}
 
 	/**
@@ -956,18 +956,18 @@ class NetworkOptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_site_option` function,
 		 * and `update_site_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize(0));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize(0));
 
 		$registry = new Registry();
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'integer')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'integer')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		update_site_option($this->optionName, $value);
+		update_site_option(self::$optionName, $value);
 
-		$this->assertSame($expect, get_site_option($this->optionName));
+		$this->assertSame($expect, get_site_option(self::$optionName));
 	}
 
 	/**
@@ -1019,16 +1019,16 @@ class NetworkOptionTest extends WPTestCase
 		 * Assumes that the option is already added with a value since the test only
 		 * concerns about the value retrieved with the `get_site_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize($value));
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'integer')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'integer')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertSame($value, get_site_option($this->optionName));
+		$this->assertSame($value, get_site_option(self::$optionName));
 	}
 
 	/**
@@ -1041,14 +1041,14 @@ class NetworkOptionTest extends WPTestCase
 	public function testAddTypeIntegerStrictValid($value): void
 	{
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'integer')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'integer')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertTrue(add_site_option($this->optionName, $value));
-		$this->assertSame($value, get_site_option($this->optionName));
+		$this->assertTrue(add_site_option(self::$optionName, $value));
+		$this->assertSame($value, get_site_option(self::$optionName));
 	}
 
 	/**
@@ -1065,18 +1065,18 @@ class NetworkOptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_site_option` function,
 		 * and the `update_site_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize(1));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize(1));
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'integer')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'integer')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		update_site_option($this->optionName, $value);
+		update_site_option(self::$optionName, $value);
 
-		$this->assertSame($value, get_site_option($this->optionName));
+		$this->assertSame($value, get_site_option(self::$optionName));
 	}
 
 	public function dataTypeIntegerStrictValid(): iterable
@@ -1103,10 +1103,10 @@ class NetworkOptionTest extends WPTestCase
 		 * Assumes that the option is already added with a value since the test only
 		 * concerns about the value retrieved with the `get_site_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize($value));
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'integer')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'integer')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
@@ -1115,7 +1115,7 @@ class NetworkOptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		get_site_option($this->optionName);
+		get_site_option(self::$optionName);
 	}
 
 	/**
@@ -1128,7 +1128,7 @@ class NetworkOptionTest extends WPTestCase
 	public function testAddTypeIntegerStrictInvalid($value, string $errorMessage): void
 	{
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'integer')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'integer')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
@@ -1137,7 +1137,7 @@ class NetworkOptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		add_site_option($this->optionName, $value);
+		add_site_option(self::$optionName, $value);
 	}
 
 	/**
@@ -1154,10 +1154,10 @@ class NetworkOptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_site_option` function,
 		 * and the `update_site_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize(1));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize(1));
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'integer')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'integer')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
@@ -1166,7 +1166,7 @@ class NetworkOptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		update_site_option($this->optionName, $value);
+		update_site_option(self::$optionName, $value);
 	}
 
 	public function dataTypeIntegerStrictInvalid(): iterable
@@ -1191,16 +1191,16 @@ class NetworkOptionTest extends WPTestCase
 		 * Assumes that the option is already added with a value since the test only
 		 * concerns about the value retrieved with the `get_site_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize($value));
 
 		$registry = new Registry();
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'number')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'number')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertSame($expect, get_site_option($this->optionName));
+		$this->assertSame($expect, get_site_option(self::$optionName));
 	}
 
 	/**
@@ -1213,14 +1213,14 @@ class NetworkOptionTest extends WPTestCase
 	public function testAddTypeNumber($value, $expect): void
 	{
 		$registry = new Registry();
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'number')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'number')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertTrue(add_site_option($this->optionName, $value));
-		$this->assertSame($expect, get_site_option($this->optionName));
+		$this->assertTrue(add_site_option(self::$optionName, $value));
+		$this->assertSame($expect, get_site_option(self::$optionName));
 	}
 
 	/**
@@ -1237,18 +1237,18 @@ class NetworkOptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_site_option` function,
 		 * and `update_site_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize(0));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize(0));
 
 		$registry = new Registry();
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'number')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'number')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		update_site_option($this->optionName, $value);
+		update_site_option(self::$optionName, $value);
 
-		$this->assertSame($expect, get_site_option($this->optionName));
+		$this->assertSame($expect, get_site_option(self::$optionName));
 	}
 
 	/**
@@ -1291,16 +1291,16 @@ class NetworkOptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_site_option` function,
 		 * and `update_site_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize($value));
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'number')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'number')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertSame($value, get_site_option($this->optionName));
+		$this->assertSame($value, get_site_option(self::$optionName));
 	}
 
 	/**
@@ -1316,16 +1316,16 @@ class NetworkOptionTest extends WPTestCase
 		 * Assumes that the option is already added with a value since the test only
 		 * concerns about the value retrieved with the `get_site_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize($value));
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'number')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'number')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertSame($value, get_site_option($this->optionName));
+		$this->assertSame($value, get_site_option(self::$optionName));
 	}
 
 	/**
@@ -1338,14 +1338,14 @@ class NetworkOptionTest extends WPTestCase
 	public function testAddTypeNumberStrictValid($value): void
 	{
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'number')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'number')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertTrue(add_site_option($this->optionName, $value));
-		$this->assertSame($value, get_site_option($this->optionName));
+		$this->assertTrue(add_site_option(self::$optionName, $value));
+		$this->assertSame($value, get_site_option(self::$optionName));
 	}
 
 	public function dataTypeNumberStrictValid(): iterable
@@ -1378,10 +1378,10 @@ class NetworkOptionTest extends WPTestCase
 		 * Assumes that the option is already added with a value since the test only
 		 * concerns about the value retrieved with the `get_site_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize($value));
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'number')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'number')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
@@ -1390,7 +1390,7 @@ class NetworkOptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		get_site_option($this->optionName);
+		get_site_option(self::$optionName);
 	}
 
 	/**
@@ -1404,7 +1404,7 @@ class NetworkOptionTest extends WPTestCase
 	public function testAddTypeNumberStrictInvalid($value, string $errorMessage): void
 	{
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'number')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'number')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
@@ -1413,7 +1413,7 @@ class NetworkOptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		add_site_option($this->optionName, $value);
+		add_site_option(self::$optionName, $value);
 	}
 
 	/**
@@ -1431,10 +1431,10 @@ class NetworkOptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_site_option` function, and
 		 * updated with the `update_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize($value));
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'number')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'number')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
@@ -1443,7 +1443,7 @@ class NetworkOptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		update_site_option($this->optionName, $value);
+		update_site_option(self::$optionName, $value);
 	}
 
 	public function dataTypeNumberStrictInvalid(): iterable
@@ -1468,16 +1468,16 @@ class NetworkOptionTest extends WPTestCase
 		 * Assumes that the option is already added with a value since the test only
 		 * concerns about the value retrieved with the `get_site_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize($value));
 
 		$registry = new Registry();
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'array')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'array')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertSame($expect, get_site_option($this->optionName));
+		$this->assertSame($expect, get_site_option(self::$optionName));
 	}
 
 	/**
@@ -1490,14 +1490,14 @@ class NetworkOptionTest extends WPTestCase
 	public function testAddTypeArray($value, $expect): void
 	{
 		$registry = new Registry();
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'array')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'array')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertTrue(add_site_option($this->optionName, $value));
-		$this->assertSame($expect, get_site_option($this->optionName));
+		$this->assertTrue(add_site_option(self::$optionName, $value));
+		$this->assertSame($expect, get_site_option(self::$optionName));
 	}
 
 	/**
@@ -1514,18 +1514,18 @@ class NetworkOptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_site_option` function, and
 		 * updated with the `update_site_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize(['bar']));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize(['bar']));
 
 		$registry = new Registry();
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'array')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'array')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		update_site_option($this->optionName, $value);
+		update_site_option(self::$optionName, $value);
 
-		$this->assertSame($expect, get_site_option($this->optionName));
+		$this->assertSame($expect, get_site_option(self::$optionName));
 	}
 
 	/**
@@ -1561,16 +1561,16 @@ class NetworkOptionTest extends WPTestCase
 		 * Assumes that the option is already added with a value since the test only
 		 * concerns about the value retrieved with the `get_site_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize($value));
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'array')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'array')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertSame($value, get_site_option($this->optionName));
+		$this->assertSame($value, get_site_option(self::$optionName));
 	}
 
 	/**
@@ -1582,14 +1582,14 @@ class NetworkOptionTest extends WPTestCase
 	public function testAddTypeArrayStrictValue($value): void
 	{
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'array')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'array')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertTrue(add_site_option($this->optionName, $value));
-		$this->assertSame($value, get_site_option($this->optionName));
+		$this->assertTrue(add_site_option(self::$optionName, $value));
+		$this->assertSame($value, get_site_option(self::$optionName));
 	}
 
 	/**
@@ -1606,18 +1606,18 @@ class NetworkOptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_site_option` function,
 		 * and updated with the `update_site_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize($value));
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'array')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'array')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		update_site_option($this->optionName, $value);
+		update_site_option(self::$optionName, $value);
 
-		$this->assertSame($value, get_site_option($this->optionName));
+		$this->assertSame($value, get_site_option(self::$optionName));
 	}
 
 	public function dataTypeArrayStrictValid(): iterable
@@ -1642,10 +1642,10 @@ class NetworkOptionTest extends WPTestCase
 		 * Assumes that the option is already added with a value since the test only
 		 * concerns about the value retrieved with the `get_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize($value));
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'array')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'array')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
@@ -1654,7 +1654,7 @@ class NetworkOptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		get_site_option($this->optionName);
+		get_site_option(self::$optionName);
 	}
 
 	/**
@@ -1667,7 +1667,7 @@ class NetworkOptionTest extends WPTestCase
 	public function testRegistryAddTypeArrayStrictInvalid($value, string $errorMessage): void
 	{
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'array')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'array')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
@@ -1676,7 +1676,7 @@ class NetworkOptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		add_site_option($this->optionName, $value);
+		add_site_option(self::$optionName, $value);
 	}
 
 	/**
@@ -1694,10 +1694,10 @@ class NetworkOptionTest extends WPTestCase
 		 * concerns about the value retrieved with the `get_option` function, and
 		 * updated with the `update_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize($value));
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[new NetworkOption($this->optionName, 'array')]);
+		$registry->addOptions(...[new NetworkOption(self::$optionName, 'array')]);
 		$registry->hook($this->hook);
 		$registry->register();
 
@@ -1706,7 +1706,7 @@ class NetworkOptionTest extends WPTestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		update_site_option($this->optionName, $value);
+		update_site_option(self::$optionName, $value);
 	}
 
 	public function dataTypeArrayStrictInvalid(): iterable
@@ -1731,7 +1731,7 @@ class NetworkOptionTest extends WPTestCase
 	public function testAddConstraints($constraints, $value, $errorMessage): void
 	{
 		$registry = new Registry(1);
-		$registry->addOptions(...[(new NetworkOption($this->optionName, 'string'))->withConstraints(...$constraints)]);
+		$registry->addOptions(...[(new NetworkOption(self::$optionName, 'string'))->withConstraints(...$constraints)]);
 		$registry->hook($this->hook);
 		$registry->register();
 
@@ -1740,7 +1740,7 @@ class NetworkOptionTest extends WPTestCase
 		$this->expectException(InvalidArgumentException::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		add_site_option($this->optionName, $value);
+		add_site_option(self::$optionName, $value);
 	}
 
 	/**
@@ -1752,14 +1752,14 @@ class NetworkOptionTest extends WPTestCase
 	public function testAddConstraintsNonStrict($constraints, $value): void
 	{
 		$registry = new Registry();
-		$registry->addOptions(...[(new NetworkOption($this->optionName, 'string'))->withConstraints(...$constraints)]);
+		$registry->addOptions(...[(new NetworkOption(self::$optionName, 'string'))->withConstraints(...$constraints)]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertTrue(add_site_option($this->optionName, $value));
-		$this->assertSame($value, get_site_option($this->optionName));
+		$this->assertTrue(add_site_option(self::$optionName, $value));
+		$this->assertSame($value, get_site_option(self::$optionName));
 	}
 
 	/**
@@ -1776,10 +1776,10 @@ class NetworkOptionTest extends WPTestCase
 		 * Assumes that the option is already added with a value since the test only
 		 * concerns about the value updated with the `update_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize('email@example.org'));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize('email@example.org'));
 
 		$registry = new Registry(1);
-		$registry->addOptions(...[(new NetworkOption($this->optionName, 'string'))->withConstraints(...$constraints)]);
+		$registry->addOptions(...[(new NetworkOption(self::$optionName, 'string'))->withConstraints(...$constraints)]);
 		$registry->hook($this->hook);
 		$registry->register();
 
@@ -1788,7 +1788,7 @@ class NetworkOptionTest extends WPTestCase
 		$this->expectException(InvalidArgumentException::class);
 		$this->expectExceptionMessage($errorMessage);
 
-		update_site_option($this->optionName, $value);
+		update_site_option(self::$optionName, $value);
 	}
 
 	/**
@@ -1803,20 +1803,20 @@ class NetworkOptionTest extends WPTestCase
 		 * Assumes that the option is already added with a value since the test only
 		 * concerns about the value updated with the `update_option` function.
 		 */
-		add_site_option($this->optionName, (new InputSanitizer())->sanitize('email@example.org'));
+		add_site_option(self::$optionName, (new InputSanitizer())->sanitize('email@example.org'));
 
 		$registry = new Registry();
-		$registry->addOptions(...[(new NetworkOption($this->optionName, 'string'))->withConstraints(...$constraints)]);
+		$registry->addOptions(...[(new NetworkOption(self::$optionName, 'string'))->withConstraints(...$constraints)]);
 		$registry->hook($this->hook);
 		$registry->register();
 
 		$this->hook->register();
 
-		$this->assertSame('email@example.org', get_site_option($this->optionName));
+		$this->assertSame('email@example.org', get_site_option(self::$optionName));
 
-		update_site_option($this->optionName, $value);
+		update_site_option(self::$optionName, $value);
 
-		$this->assertSame($value, get_site_option($this->optionName));
+		$this->assertSame($value, get_site_option(self::$optionName));
 	}
 
 	public function dataConstraints(): iterable
